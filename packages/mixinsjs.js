@@ -1,5 +1,5 @@
 (function() {
-  var BUILDS, Cloneable, Mixin, Module, build, i, include, j,
+  var BUILDS, Cloneable, Mixin, Module, Sourcable, build, i, include, j,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -29,7 +29,6 @@
 
   build = function(klass, args) {
     var f;
-    console.log(klass, args);
     f = BUILDS[args != null ? args.length : 0];
     return f(klass, args);
   };
@@ -126,6 +125,71 @@
 
   })();
 
+  /* src/mixinsjs/sourcable.coffee */;
+
+
+  Sourcable = function() {
+    var ConcretSourcable, name, signature;
+    name = arguments[0], signature = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    return ConcretSourcable = (function(_super) {
+      var sourceFor;
+
+      __extends(ConcretSourcable, _super);
+
+      function ConcretSourcable() {
+        return ConcretSourcable.__super__.constructor.apply(this, arguments);
+      }
+
+      sourceFor = function(value) {
+        var isArray;
+        switch (typeof value) {
+          case 'object':
+            isArray = Object.prototype.toString.call(value).indexOf('Array') !== -1;
+            if (value.toSource != null) {
+              return value.toSource();
+            } else {
+              if (isArray) {
+                return "[" + (value.map(function(el) {
+                  return sourceFor(el);
+                })) + "]";
+              } else {
+                return value;
+              }
+            }
+            break;
+          case 'string':
+            if (value.toSource != null) {
+              return value.toSource();
+            } else {
+              return "'" + (value.replace("'", "\\'")) + "'";
+            }
+            break;
+          default:
+            return value;
+        }
+      };
+
+      ConcretSourcable.prototype.toSource = function() {
+        var arg, args;
+        args = ((function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = signature.length; _i < _len; _i++) {
+            arg = signature[_i];
+            _results.push(this[arg]);
+          }
+          return _results;
+        }).call(this)).map(function(o) {
+          return sourceFor(o);
+        });
+        return "new " + name + "(" + (args.join(',')) + ")";
+      };
+
+      return ConcretSourcable;
+
+    })(Mixin);
+  };
+
   this.mixinsjs.Cloneable = Cloneable;
 
   this.mixinsjs.include = include;
@@ -133,5 +197,7 @@
   this.mixinsjs.Mixin = Mixin;
 
   this.mixinsjs.Module = Module;
+
+  this.mixinsjs.Sourcable = Sourcable;
 
 }).call(this);

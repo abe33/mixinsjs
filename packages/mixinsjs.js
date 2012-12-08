@@ -6,6 +6,29 @@
 
   this.mixinsjs || (this.mixinsjs = {});
 
+  /* src/mixinsjs/mixin.coffee */;
+
+
+  Mixin = (function() {
+
+    function Mixin() {}
+
+    Mixin.attachTo = function(klass) {
+      var k, v, _ref;
+      _ref = this.prototype;
+      for (k in _ref) {
+        v = _ref[k];
+        if (k !== 'constructor') {
+          klass.prototype[k] = v;
+        }
+      }
+      return typeof this.included === "function" ? this.included(klass) : void 0;
+    };
+
+    return Mixin;
+
+  })();
+
   /* src/mixinsjs/cloneable.coffee */;
 
 
@@ -363,6 +386,8 @@
 
     })(Mixin);
   };
+
+  this.mixinsjs.Mixin = Mixin;
 
   this.mixinsjs.Cloneable = Cloneable;
 

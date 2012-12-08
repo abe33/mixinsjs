@@ -1,0 +1,15 @@
+name: "mixinsjs"
+package: 'mixinsjs'
+includes: [
+  'src/mixinsjs/*.coffee'
+]
+operators: [
+  'strip:requires'
+  'annotate:file'
+  'join'
+  'exports:package'
+  'compile'
+  'create:file'
+  'uglify'
+  'create:file'
+]

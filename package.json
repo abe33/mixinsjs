@@ -1,0 +1,22 @@
+{
+  "name": "mixinsjs",
+  "version": "0.0.1",
+  "author": "Cédric Néhémie <cedric.nehemie@gmail.com>",
+  "description": "A Module/Mixin implentation in javascript",
+  "keywords": [
+    "module",
+    "mixins"
+  ],
+  "engine": {
+    "node": "~0.8.0"
+  },
+  "scripts": {
+    "test": "jasmine-node --coffee test"
+  },
+  "dependencies": {
+    "neat": "0.0.74"
+  },
+  "devDependencies": {
+    "jasmine-node": "*"
+  }
+}

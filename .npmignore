@@ -1,9 +1,12 @@
+config
 src
+packages
 node_modules
 spec
 test
 fixtures
 Cakefile
 Nemfile
+.travis.yml
 .gitkeep
 .gitignore

@@ -25,10 +25,6 @@ Mixin = require './mixin'
 Formattable = (classname, properties...) ->
   #
   class ConcretFormattable extends Mixin
-    ##### Formattable.attachTo
-    #
-    # See [Mixin.attachTo](src_geomjs_mixins_mixin.html#mixinattachto)
-
     ##### Formattable::toString
     #
     # Returns the string reprensentation of this instance.

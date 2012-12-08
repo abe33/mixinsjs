@@ -25,10 +25,6 @@ Equatable = (properties...) ->
   # This class extends `Mixin` and can be attached as any other
   # mixin with the `attachTo` method.
   class ConcreteEquatable extends Mixin
-    ##### Equatable.attachTo
-    #
-    # See [Mixin.attachTo](src_geomjs_mixins_mixin.html#mixinattachto)
-
     ##### Equatable::equals
     #
     # Compares the `properties` of the passed-in object with the current

@@ -19,10 +19,7 @@ Sourcable = (name, signature...) ->
   # This class extends `Mixin` and can be attached as any other
   # mixin with the `attachTo` method.
   class ConcreteSourcable extends Mixin
-    ##### Sourcable.attachTo
     #
-    # See [Mixin.attachTo](src_geomjs_mixins_mixin.html#mixinattachto)
-
     sourceFor = (value) ->
       switch typeof value
         when 'object'

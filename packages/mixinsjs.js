@@ -1,5 +1,5 @@
 (function() {
-  var BUILDS, Cloneable, Equatable, Formattable, Mixin, Module, Sourcable, build, i, include, j,
+  var BUILDS, Cloneable, Equatable, Formattable, Memoizable, Mixin, Module, Parameterizable, Sourcable, build, i, include, j,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -151,6 +151,45 @@
     };
   };
 
+  /* src/mixinsjs/memoizable.coffee */;
+
+
+  Memoizable = (function(_super) {
+
+    __extends(Memoizable, _super);
+
+    function Memoizable() {
+      return Memoizable.__super__.constructor.apply(this, arguments);
+    }
+
+    Memoizable.prototype.memoized = function(prop) {
+      var _ref;
+      if (this.memoizationKey() === this.__memoizationKey__) {
+        return ((_ref = this.__memo__) != null ? _ref[prop] : void 0) != null;
+      } else {
+        this.__memo__ = {};
+        return false;
+      }
+    };
+
+    Memoizable.prototype.memoFor = function(prop) {
+      return this.__memo__[prop];
+    };
+
+    Memoizable.prototype.memoize = function(prop, value) {
+      this.__memo__ || (this.__memo__ = {});
+      this.__memoizationKey__ = this.memoizationKey();
+      return this.__memo__[prop] = value;
+    };
+
+    Memoizable.prototype.memoizationKey = function() {
+      return this.toString();
+    };
+
+    return Memoizable;
+
+  })(Mixin);
+
   /* src/mixinsjs/mixin.coffee */;
 
 
@@ -195,6 +234,70 @@
     return Module;
 
   })();
+
+  /* src/mixinsjs/parameterizable.coffee */;
+
+
+  Parameterizable = function(method, parameters, allowPartial) {
+    var ConcreteParameterizable;
+    if (allowPartial == null) {
+      allowPartial = false;
+    }
+    return ConcreteParameterizable = (function(_super) {
+
+      __extends(ConcreteParameterizable, _super);
+
+      function ConcreteParameterizable() {
+        return ConcreteParameterizable.__super__.constructor.apply(this, arguments);
+      }
+
+      ConcreteParameterizable.included = function(klass) {
+        var f;
+        f = function() {
+          var args, firstArgumentIsObject, k, keys, n, o, output, strict, v, value, _i;
+          args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), strict = arguments[_i++];
+          if (typeof strict === 'number') {
+            args.push(strict);
+            strict = false;
+          }
+          output = {};
+          o = arguments[0];
+          n = 0;
+          firstArgumentIsObject = (o != null) && typeof o === 'object';
+          for (k in parameters) {
+            v = parameters[k];
+            value = firstArgumentIsObject ? o[k] : arguments[n++];
+            output[k] = parseFloat(value);
+            if (isNaN(output[k])) {
+              if (strict) {
+                keys = ((function() {
+                  var _j, _len, _results;
+                  _results = [];
+                  for (_j = 0, _len = parameters.length; _j < _len; _j++) {
+                    k = parameters[_j];
+                    _results.push(k);
+                  }
+                  return _results;
+                })()).join(', ');
+                throw new Error("" + output + " doesn't match pattern {" + keys + "}");
+              }
+              if (allowPartial) {
+                delete output[k];
+              } else {
+                output[k] = v;
+              }
+            }
+          }
+          return output;
+        };
+        klass[method] = f;
+        return klass.prototype[method] = f;
+      };
+
+      return ConcreteParameterizable;
+
+    })(Mixin);
+  };
 
   /* src/mixinsjs/sourcable.coffee */;
 
@@ -269,9 +372,13 @@
 
   this.mixinsjs.include = include;
 
+  this.mixinsjs.Memoizable = Memoizable;
+
   this.mixinsjs.Mixin = Mixin;
 
   this.mixinsjs.Module = Module;
+
+  this.mixinsjs.Parameterizable = Parameterizable;
 
   this.mixinsjs.Sourcable = Sourcable;
 

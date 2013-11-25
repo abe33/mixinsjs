@@ -1,5 +1,4 @@
 # @toc
-Mixin = require './mixin'
 
 ## Sourcable
 
@@ -13,12 +12,12 @@ Mixin = require './mixin'
 #
 #     dummy = new Dummy(10,'foo')
 #     dummy.toSource() # "new geomjs.Dummy(10,'foo')"
-Sourcable = (name, signature...) ->
+mixins.Sourcable = (name, signature...) ->
 
   # A concrete class is generated and returned by `Sourcable`.
   # This class extends `Mixin` and can be attached as any other
   # mixin with the `attachTo` method.
-  class ConcreteSourcable extends Mixin
+  class ConcreteSourcable
     #
     sourceFor = (value) ->
       switch typeof value
@@ -46,4 +45,4 @@ Sourcable = (name, signature...) ->
 
       "new #{name}(#{args.join ','})"
 
-module.exports = Sourcable
+mixins.Sourcable._name = 'Sourcable'

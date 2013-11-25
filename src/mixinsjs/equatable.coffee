@@ -1,13 +1,11 @@
 # @toc
-Mixin = require './mixin'
-
 ## Equatable
 
 # An `Equatable` object can be compared in equality with another object.
 # Objects are considered as equals if all the listed properties are equal.
 #
 #     class Dummy
-#       Equatable('p1', 'p2').attachTo Dummy
+#       @include mixins.Equatable('p1', 'p2')
 #
 #       constructor: (@p1, @p2) ->
 #         # ...
@@ -19,12 +17,12 @@ Mixin = require './mixin'
 # The `Equatable` mixin is called a parameterized mixin as
 # it's in fact a function that will generate a mixin based
 # on its arguments.
-Equatable = (properties...) ->
+mixins.Equatable = (properties...) ->
 
   # A concrete class is generated and returned by `Equatable`.
   # This class extends `Mixin` and can be attached as any other
   # mixin with the `attachTo` method.
-  class ConcreteEquatable extends Mixin
+  class ConcreteEquatable
     ##### Equatable::equals
     #
     # Compares the `properties` of the passed-in object with the current
@@ -32,4 +30,4 @@ Equatable = (properties...) ->
     equals: (o) -> o? and properties.every (p) =>
       if @[p].equals? then @[p].equals o[p] else o[p] is @[p]
 
-module.exports = Equatable
+mixins.Equatable._name = 'Equatable'

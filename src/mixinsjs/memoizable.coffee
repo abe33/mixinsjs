@@ -1,5 +1,4 @@
 # @toc
-Mixin = require './mixin'
 
 ## Memoizable
 
@@ -24,7 +23,7 @@ Mixin = require './mixin'
 #         @memoize key, result
 #
 #       memoizationKey: -> "#{p1};#{p2}"
-class Memoizable extends Mixin
+class mixins.Memoizable
   ##### Memoizable::memoized
   #
   # Returns `true` if data are available for the given `prop`.
@@ -60,4 +59,3 @@ class Memoizable extends Mixin
   # Generates the memoization key for this instance's state.
   memoizationKey: -> @toString()
 
-module.exports = Memoizable

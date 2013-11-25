@@ -1,12 +1,12 @@
 # @toc
-Mixin = require './mixin'
 
 ## Parameterizable
 
 #
-Parameterizable = (method, parameters, allowPartial=false) ->
+mixins.Parameterizable = (method, parameters, allowPartial=false) ->
   #
-  class ConcreteParameterizable extends Mixin
+  class ConcreteParameterizable
+
     ##### Parameterizable.included
     #
     @included: (klass) ->
@@ -33,4 +33,4 @@ Parameterizable = (method, parameters, allowPartial=false) ->
       klass[method] = f
       klass::[method] = f
 
-module.exports = Parameterizable
+mixins.Parameterizable._name = 'Parameterizable'

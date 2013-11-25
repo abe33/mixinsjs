@@ -1,6 +1,4 @@
 # @toc
-Mixin = require './mixin'
-
 ## Formattable
 
 # A `Formattable` object provides a `toString` that return
@@ -22,16 +20,17 @@ Mixin = require './mixin'
 # name can't be relied on anymore.
 # Passing the class name will ensure that the initial class name
 # is always accessible through an instance.
-Formattable = (classname, properties...) ->
+mixins.Formattable = (classname, properties...) ->
   #
-  class ConcretFormattable extends Mixin
+  class ConcretFormattable
     ##### Formattable::toString
     #
     # Returns the string reprensentation of this instance.
-    toString: ->
-      if properties.length is 0
+    if properties.length is 0
+      ConcretFormattable::toString = ->
         "[#{classname}]"
-      else
+    else
+      ConcretFormattable::toString = ->
         formattedProperties = ("#{p}=#{@[p]}" for p in properties)
         "[#{classname}(#{formattedProperties.join ', '})]"
 
@@ -40,4 +39,4 @@ Formattable = (classname, properties...) ->
     # Returns the class name of this instance.
     classname: -> classname
 
-module.exports = Formattable
+mixins.Formattable._name = 'Formattable'

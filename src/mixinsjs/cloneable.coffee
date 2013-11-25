@@ -1,5 +1,4 @@
 # @toc
-Mixin = require './mixin'
 
 ## Cloneable
 
@@ -20,11 +19,40 @@ build = (klass, args) ->
 
 #### Cloneable
 
-Cloneable = (properties...) ->
-  class ConcreteCloneable extends Mixin
-    @included: if properties.length is 0
-      (klass) -> klass::clone = -> new klass this
+# A `Cloneable` object can return a copy of itself through the `clone`
+# method. The `Cloneable` function product a different mixin when called
+# with or without arguments.
+# When called without argument, the returned mixin creates a clone using
+# a copy constructor (a constructor that initialize the current object
+# with an object).
+#
+#     class Dummy
+#       @include mixins.Cloneable()
+#
+#       constructor: (options={}) ->
+#         @property = options.property or 'foo'
+#         @otherProperty = options.otherProperty or 'bar'
+#
+#     instance = new Dummy
+#     otherInstance = instance.clone()
+#     # otherInstance = {property: 'foo', otherProperty: 'bar'}
+#
+# When called with arguments, the `clone` method will call the class
+# constructor with the values extracted from the given properties.
+#
+#     class Dummy
+#       @include mixins.Cloneable('property', 'otherProperty')
+#
+#       constructor: (@property='foo', @otherProperty='bar') ->
+#
+#     instance = new Dummy
+#     otherInstance = instance.clone()
+#     # otherInstance = {property: 'foo', otherProperty: 'bar'}
+mixins.Cloneable = (properties...) ->
+  class ConcreteCloneable
+    if properties.length is 0
+      @included: (klass) -> klass::clone = -> new klass this
     else
-      (klass) -> klass::clone = -> build klass, properties.map (p) => @[p]
+      @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[p]
 
-module.exports = Cloneable
+mixins.Cloneable._name = 'Cloneable'

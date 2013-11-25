@@ -27,10 +27,17 @@ module.exports = (grunt) ->
             'src/mixinsjs/*.coffee'
           ]
 
+    uglify:
+      all:
+        options:
+          sourceMap: 'lib/mixins.min.js.map'
+        files:
+          'lib/mixins.min.js': ['lib/mixins.js']
+
     watch:
       scripts:
         files: ['src/**/*.coffee', 'specs/**/*.coffee']
-        tasks: ['coffee', 'test']
+        tasks: ['coffee', 'uglify', 'test']
 
     growl:
       spectacular_success:
@@ -41,6 +48,7 @@ module.exports = (grunt) ->
         title: 'Spectacular Tests'
         message: 'Some tests failed'
 
+  grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-growl')

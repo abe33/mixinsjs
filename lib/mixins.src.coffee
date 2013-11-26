@@ -425,18 +425,15 @@ mixins.Sourcable = (name, signature...) ->
       switch typeof value
         when 'object'
           isArray = Object::toString.call(value).indexOf('Array') isnt -1
-          if value.toSource?
-            value.toSource()
+          if isArray
+            "[#{value.map (el) -> sourceFor el}]"
           else
-            if isArray
-              "[#{value.map (el) -> sourceFor el}]"
+            if value.toSource?
+              value.toSource()
             else
               value
         when 'string'
-          if value.toSource?
-            value.toSource()
-          else
-            "'#{value.replace "'", "\\'"}'"
+          "'#{value.replace "'", "\\'"}'"
         else value
 
     ##### Sourcable::toSource

@@ -11,7 +11,8 @@
     "node": "~0.10.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/spectacular test specs/**/*.spec.coffee"
+    "test": "./node_modules/.bin/spectacular test specs/**/*.spec.coffee",
+    "start": "./node_modules/.bin/spectacular server specs/**/*.spec.coffee"
   },
   "dependencies": {},
   "main": "./lib/index",

@@ -4,6 +4,150 @@
 		"selected_items":
 		[
 			[
+				"type",
+				"typeof"
+			],
+			[
+				"th",
+				"this"
+			],
+			[
+				"ge",
+				"getKey"
+			],
+			[
+				"__",
+				"__super__"
+			],
+			[
+				"call",
+				"caller"
+			],
+			[
+				"con",
+				"constructor"
+			],
+			[
+				"insta",
+				"instanceB"
+			],
+			[
+				"ins",
+				"instanceA"
+			],
+			[
+				"ex",
+				"exist"
+			],
+			[
+				"mix",
+				"mixinA"
+			],
+			[
+				"mi",
+				"mixinA"
+			],
+			[
+				"the",
+				"throwAnError"
+			],
+			[
+				"chil",
+				"childClass"
+			],
+			[
+				"Chil",
+				"ChildClassA"
+			],
+			[
+				"mixi",
+				"mixin"
+			],
+			[
+				"anc",
+				"ancestor"
+			],
+			[
+				"mixin",
+				"mixinA"
+			],
+			[
+				"s",
+				"__super_of_mixins__"
+			],
+			[
+				"__mi",
+				"__super_of_mixins__"
+			],
+			[
+				"ance",
+				"ancestor"
+			],
+			[
+				"dispo",
+				"dispose"
+			],
+			[
+				"used",
+				"usedInstances"
+			],
+			[
+				"Test",
+				"TestClass2"
+			],
+			[
+				"Te",
+				"TestClass1"
+			],
+			[
+				"_",
+				"_name"
+			],
+			[
+				"sec",
+				"secondCall"
+			],
+			[
+				"mem",
+				"memoize"
+			],
+			[
+				"ea",
+				"equal"
+			],
+			[
+				"in",
+				"instance2"
+			],
+			[
+				"equa",
+				"equals"
+			],
+			[
+				"instan",
+				"instance2"
+			],
+			[
+				"instance",
+				"instance1"
+			],
+			[
+				"test",
+				"testClass"
+			],
+			[
+				"spectac",
+				"spectacular_failure"
+			],
+			[
+				"spectacular_",
+				"spectacular_success"
+			],
+			[
+				"cm",
+				"command"
+			],
+			[
 				"to",
 				"toString"
 			],
@@ -12,16 +156,8 @@
 				"fragmentFor"
 			],
 			[
-				"mixin",
-				"mixins"
-			],
-			[
 				"source",
 				"sourceFragment"
-			],
-			[
-				"ex",
-				"exports"
 			],
 			[
 				"cons",
@@ -158,10 +294,6 @@
 			[
 				"key",
 				"keysRemains"
-			],
-			[
-				"con",
-				"consumeKeys"
 			],
 			[
 				"tar",
@@ -382,165 +514,24 @@
 			[
 				"has",
 				"hashAttributes"
-			],
-			[
-				"haveAt",
-				"haveAttribute"
-			],
-			[
-				"haveAtt",
-				"haveAttributes"
-			],
-			[
-				"des",
-				"describe"
-			],
-			[
-				"p",
-				"property"
-			],
-			[
-				"matc",
-				"matchers"
-			],
-			[
-				"at",
-				"actual"
-			],
-			[
-				"match",
-				"match"
-			],
-			[
-				"mess",
-				"messageForShouldnt"
-			],
-			[
-				"mes",
-				"messageForShould"
-			],
-			[
-				"string",
-				"stringProperties"
-			],
-			[
-				"strin",
-				"stringProperties"
-			],
-			[
-				"prop",
-				"properties"
-			],
-			[
-				"matcher",
-				"matchers"
-			],
-			[
-				"colle",
-				"collectHash"
-			],
-			[
-				"proper",
-				"properties"
-			],
-			[
-				"coll",
-				"collectStrings"
-			],
-			[
-				"sue",
-				"success"
-			],
-			[
-				"fa",
-				"failureMessageForShould"
-			],
-			[
-				"Ex",
-				"Expected"
-			],
-			[
-				"format",
-				"formatValue"
-			],
-			[
-				"dec",
-				"description"
-			],
-			[
-				"chai",
-				"chains"
-			],
-			[
-				"re",
-				"reporter"
-			],
-			[
-				"contai",
-				"container"
-			],
-			[
-				"list",
-				"listContainer"
-			],
-			[
-				"ancest",
-				"ancestors"
-			],
-			[
-				"exam",
-				"example"
-			],
-			[
-				"get",
-				"getAttribute"
-			],
-			[
-				"when",
-				"whenPass"
-			],
-			[
-				"skip",
-				"skipped"
-			],
-			[
-				"error",
-				"errored"
-			],
-			[
-				"whe",
-				"whenPass"
-			],
-			[
-				"ver",
-				"very_dark_blue"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "package.json",
+			"file": "src/mixinsjs/delegation.coffee",
 			"settings":
 			{
-				"buffer_size": 619,
+				"buffer_size": 68,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Gruntfile.coffee",
+			"file": "specs/units/mixinsjs/delegation.spec.coffee",
 			"settings":
 			{
-				"buffer_size": 0,
-				"line_ending": "Unix",
-				"name": "Gruntfile.coffee"
-			}
-		},
-		{
-			"file": ".npmignore",
-			"settings":
-			{
-				"buffer_size": 101,
+				"buffer_size": 518,
 				"line_ending": "Unix"
 			}
 		}
@@ -588,6 +579,41 @@
 	},
 	"file_history":
 	[
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/function.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/sourcable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/Gruntfile.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/spectacular/src/matchers.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/package.json",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/function.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/sourcable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/spectacular/lib/spectacular.js",
+		"/Users/cedric/Development/coffeescript/mixinsjs/bower.json",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/formattable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/poolable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/parameterizable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/poolable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/cloneable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/parameterizable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/support/spec_helper.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/formattable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/equatable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/memoizable.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/cloneable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/mixin.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/mixin.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/memoizable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/equatable.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/index.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/lib/mixins.js",
+		"/Users/cedric/Development/coffeescript/mixinsjs/.spectacular",
+		"/Users/cedric/Development/coffeescript/mixinsjs/src/mixinsjs/module.coffee",
+		"/Users/cedric/Development/coffeescript/spectacular/Cakefile",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/spectacular/src/module.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/spectacular/src/mixins.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/spectacular/src/extensions.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/module.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/specs/units/mixinsjs/include.spec.coffee",
+		"/Users/cedric/Development/coffeescript/mixinsjs/node_modules/grunt/package.json",
 		"/Users/cedric/Development/coffeescript/particlejs/config/packages/compile.cup",
 		"/Users/cedric/Development/coffeescript/particlejs/test/fixtures/particlejs/compiled_sub_system.js",
 		"/Users/cedric/Development/coffeescript/particlejs/src/particlejs/sub_system.coffee",
@@ -629,7 +655,6 @@
 		"/Users/cedric/Development/coffeescript/spectacular/src/matchers.coffee",
 		"/Users/cedric/Development/coffeescript/spectacular/lib/spectacular.js",
 		"/Users/cedric/Development/coffeescript/spectacular/specs/support/factories/examples.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/Cakefile",
 		"/Users/cedric/Development/coffeescript/spectacular/src/spectacular_phantomjs.coffee",
 		"/Users/cedric/Development/coffeescript/spectacular/src/mixins.coffee",
 		"/Users/cedric/Development/coffeescript/spectacular/docs/tests.md",
@@ -681,45 +706,11 @@
 		"/Users/cedric/Development/ruby/spectacular_rails/app/assets/javascripts/spectacular_rails.js.coffee",
 		"/Users/cedric/Development/ruby/spectacular_rails_test/spec/javascripts/fixtures/some_fixture.dom",
 		"/Users/cedric/Development/ruby/spectacular_rails_test/spec/javascripts/fixtures/some_fixture.txt",
-		"/Users/cedric/Development/ruby/jasminerice/app/views/jasminerice/spec/index.html.erb",
-		"/Users/cedric/Development/coffeescript/spectacular/docs/spectacular-1.4.0.zip",
-		"/Users/cedric/Development/coffeescript/spectacular/src/runner.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/css/functions.styl",
-		"/Users/cedric/Development/coffeescript/spectacular/src/spectacular_slimerjs.coffee",
-		"/Users/cedric/Development/ruby/spectacular_rails_test/config/environment.rb",
-		"/Users/cedric/Development/coffeescript/spectacular/vendor/snap.js",
-		"/Users/cedric/Development/coffeescript/spectacular/specs/support/fixtures/errors/source_formatted.txt",
-		"/Users/cedric/Development/coffeescript/spectacular/src/errors.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/error_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/console_reporter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/error_stack_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/templates/formatters/viewer.jade",
-		"/Users/cedric/Development/coffeescript/spectacular/vendor/jade.js",
-		"/Users/cedric/Development/coffeescript/spectacular/templates/500.jade",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/browser/sliding_object.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/specs/units/server.spec.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/spectacular_bin.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/specs/units/failing.spec.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/browser/utils.coffee",
-		"/Users/cedric/Development/ruby/exoplanets/app/assets/javascripts/planets/utils.js.coffee",
-		"/Users/cedric/Development/ruby/sudouest/source/javascripts/promises.js.coffee",
-		"/Users/cedric/Development/ruby/the_sourcerer/app/assets/javascripts/application.js.coffee",
-		"/Users/cedric/Development/ruby/sudouest/source/arche-1col.html.haml",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/profile_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/duration_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/seed_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/resume_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/example_results_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/results_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/progress_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/src/formatters/console/documentation_formatter.coffee",
-		"/Users/cedric/Development/coffeescript/spectacular/specs/units/formatters/console/duration_formatter.spec.coffee"
+		"/Users/cedric/Development/ruby/jasminerice/app/views/jasminerice/spec/index.html.erb"
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 46.0
 	},
 	"find_in_files":
 	{
@@ -735,6 +726,19 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"->\n",
+			"a",
+			"throw",
+			"super",
+			"used",
+			"PoolableClass",
+			"InstancesPool",
+			"Mixin",
+			"      ",
+			"Cloneable",
+			"exports",
+			"spectacular",
+			"\n",
 			"signature",
 			"particle",
 			"Particle",
@@ -849,20 +853,7 @@
 			"'",
 			"success",
 			" ",
-			"Purple",
-			"Background",
-			"init",
-			"widget",
-			"appendToBody",
-			"content",
-			"options",
-			"on",
-			"reporter",
-			"spectacular.env.",
-			"console",
-			"documenta",
-			"example",
-			"runner"
+			"Purple"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -885,81 +876,24 @@
 			[
 				{
 					"buffer": 0,
-					"file": "package.json",
+					"file": "src/mixinsjs/delegation.coffee",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 619,
+						"buffer_size": 68,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								592,
-								592
+								68,
+								68
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Gruntfile.coffee",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"auto_name": "Gruntfile.coffee",
 							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": ".npmignore",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 101,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -970,8 +904,36 @@
 			]
 		},
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 1,
+					"file": "specs/units/mixinsjs/delegation.spec.coffee",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 518,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								517,
+								517
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1024,6 +986,62 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"sourca",
+				"specs/units/mixinsjs/sourcable.spec.coffee"
+			],
+			[
+				"sourc",
+				"src/mixinsjs/sourcable.coffee"
+			],
+			[
+				"gruntf",
+				"Gruntfile.coffee"
+			],
+			[
+				"packa",
+				"package.json"
+			],
+			[
+				"match",
+				"node_modules/spectacular/src/matchers.coffee"
+			],
+			[
+				"func",
+				"src/function.coffee"
+			],
+			[
+				"bow",
+				"bower.json"
+			],
+			[
+				"grun",
+				"Gruntfile.coffee"
+			],
+			[
+				"clon",
+				"specs/units/mixinsjs/cloneable.spec.coffee"
+			],
+			[
+				"spech",
+				"specs/support/spec_helper.coffee"
+			],
+			[
+				"mixi",
+				"src/mixinsjs/mixin.coffee"
+			],
+			[
+				"clo",
+				"src/mixinsjs/cloneable.coffee"
+			],
+			[
+				"mixins",
+				"node_modules/spectacular/src/mixins.coffee"
+			],
+			[
+				"module",
+				"node_modules/spectacular/src/module.coffee"
+			],
 			[
 				"packacup",
 				"config/packages/compile.cup"
@@ -1195,10 +1213,6 @@
 			[
 				"utils.",
 				"spectacular/src/utils.coffee"
-			],
-			[
-				"match",
-				"spectacular/src/matchers.coffee"
 			],
 			[
 				"cakef",
@@ -1483,58 +1497,6 @@
 			[
 				"fai",
 				"spectacular/specs/units/failing_examples.spec.coffee"
-			],
-			[
-				"progree",
-				"spectacular/templates/formatters/progress.jade"
-			],
-			[
-				"ser",
-				"spectacular/src/server.coffee"
-			],
-			[
-				"specja",
-				"spectacular/templates/specs.jade"
-			],
-			[
-				"sourfr",
-				"spectacular/src/formatters/console/error_source_formatter.coffee"
-			],
-			[
-				"errors",
-				"spectacular/src/errors.coffee"
-			],
-			[
-				"console",
-				"spectacular/src/console_reporter.coffee"
-			],
-			[
-				"stackfor",
-				"spectacular/src/formatters/console/error_stack_formatter.coffee"
-			],
-			[
-				"formaerr",
-				"spectacular/src/formatters/console/error_formatter.coffee"
-			],
-			[
-				"consol",
-				"spectacular/src/console_reporter.coffee"
-			],
-			[
-				"phant",
-				"spectacular/src/spectacular_phantomjs.coffee"
-			],
-			[
-				"colo",
-				"spectacular/css/colors.styl"
-			],
-			[
-				"func",
-				"spectacular/css/functions.styl"
-			],
-			[
-				"serv",
-				"spectacular/src/server.coffee"
 			]
 		],
 		"width": 0.0
@@ -1545,15 +1507,15 @@
 		"selected_items":
 		[
 			[
+				"",
+				"~/Development/coffeescript/spectacular/spectacular.sublime-project"
+			],
+			[
 				"sp",
 				"~/Development/coffeescript/spectacular/spectacular.sublime-project"
 			],
 			[
 				"the",
-				"~/Development/ruby/the_sourcerer/the_sourcerer.sublime-project"
-			],
-			[
-				"",
 				"~/Development/ruby/the_sourcerer/the_sourcerer.sublime-project"
 			],
 			[

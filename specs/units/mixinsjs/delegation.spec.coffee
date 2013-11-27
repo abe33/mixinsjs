@@ -4,7 +4,7 @@ describe mixins.Delegation, ->
       class TestClass
         @extend mixins.Delegation
 
-        @delegate 'foo', 'bar', to: 'subObject'
+        @delegate 'foo', 'bar', 'func', to: 'subObject'
         @delegate 'baz', to: 'subObject', prefix: true
         @delegate 'baz', to: 'subObject', prefix: true, case: 'snake'
 
@@ -13,6 +13,7 @@ describe mixins.Delegation, ->
             foo: 'foo'
             bar: 'bar'
             baz: 'baz'
+            func: -> @foo
 
     given 'instance', -> new @testClass
 
@@ -20,6 +21,11 @@ describe mixins.Delegation, ->
 
       specify -> expect(@instance.foo).to equal 'foo'
       specify -> expect(@instance.bar).to equal 'bar'
+
+      context 'that hold a function', ->
+        context 'calling the function', ->
+          specify 'should be bound to the delegated object', ->
+            expect(@instance.func()).to equal 'foo'
 
       context 'with prefix', ->
         specify -> expect(@instance.subObjectBaz).to equal 'baz'

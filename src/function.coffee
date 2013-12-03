@@ -80,7 +80,10 @@ findCaller = (caller, proto) ->
 
   {}
 
-addSuperMethod = (o) ->
+##### addPrototypeSuperMethod
+#
+# Creates the `super` method on the given prototype.
+addPrototypeSuperMethod = (o) ->
   ##### Object::super
   #
   # When a mixin is included into a class, a `super` method
@@ -175,7 +178,8 @@ Function::include = (mixins...) ->
     excl = excluded.concat()
     excl = excl.concat mixin::excluded if mixin::excluded?
 
-    addSuperMethod @prototype
+    # Adds the `super` method on the prototype
+    addPrototypeSuperMethod @prototype
 
     # We loop through all the enumerable properties of the mixin's
     # prototype.

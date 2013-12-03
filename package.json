@@ -25,6 +25,7 @@
     "grunt-contrib-watch": "~0.5.3",
     "spectacular": "~1.5.0",
     "q": "~0.9.7",
-    "grunt-growl": "~0.1.5"
+    "grunt-growl": "~0.1.5",
+    "grunt-docco": "~0.3.0"
   }
 }

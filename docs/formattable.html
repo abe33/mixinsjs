@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>formattable.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="function.html">
+                function.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                index.coffee
+              </a>
+            
+              
+              <a class="source" href="alternate_case.html">
+                alternate_case.coffee
+              </a>
+            
+              
+              <a class="source" href="cloneable.html">
+                cloneable.coffee
+              </a>
+            
+              
+              <a class="source" href="delegation.html">
+                delegation.coffee
+              </a>
+            
+              
+              <a class="source" href="equatable.html">
+                equatable.coffee
+              </a>
+            
+              
+              <a class="source" href="formattable.html">
+                formattable.coffee
+              </a>
+            
+              
+              <a class="source" href="globalizable.html">
+                globalizable.coffee
+              </a>
+            
+              
+              <a class="source" href="memoizable.html">
+                memoizable.coffee
+              </a>
+            
+              
+              <a class="source" href="parameterizable.html">
+                parameterizable.coffee
+              </a>
+            
+              
+              <a class="source" href="poolable.html">
+                poolable.coffee
+              </a>
+            
+              
+              <a class="source" href="sourcable.html">
+                sourcable.coffee
+              </a>
+            
+              
+              <a class="source" href="object.html">
+                object.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>formattable.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>A <code>Formattable</code> object provides a <code>toString</code> that return
+a string representation of the current instance.</p>
+<pre><code>class Dummy
+  @include mixins.Formattable(&#39;Dummy&#39;, &#39;p1&#39;, &#39;p2&#39;)
+
+  constructor: (@p1, @p2) -&gt;
+    # ...
+
+dummy = new Dummy(10, &#39;foo&#39;)
+dummy.toString()
+# [Dummy(p1=10, p2=foo)]</code></pre>
+<p>You may wonder why the class name is passed in the <code>Formattable</code>
+call, the reason is that javascript minification can alter the
+naming of the functions and in that case, the constructor function
+name can&#39;t be relied on anymore.
+Passing the class name will ensure that the initial class name
+is always accessible through an instance.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">Formattable</span> = <span class="params">(classname, properties...)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="class"><span class="keyword">class</span> <span class="title">ConcretFormattable</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h4 id="formattable-tostring">Formattable::toString</h4>
+<p>Returns the string reprensentation of this instance.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> properties.length <span class="keyword">is</span> <span class="number">0</span>
+      <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
+        <span class="string">"[<span class="subst">#{classname}</span>]"</span>
+    <span class="keyword">else</span>
+      <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
+        formattedProperties = (<span class="string">"<span class="subst">#{p}</span>=<span class="subst">#{@[p]}</span>"</span> <span class="keyword">for</span> p <span class="keyword">in</span> properties)
+        <span class="string">"[<span class="subst">#{classname}</span>(<span class="subst">#{formattedProperties.join <span class="string">', '</span>}</span>)]"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h4 id="formattable-classname">Formattable::classname</h4>
+<p>Returns the class name of this instance.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="attribute">classname</span>:<span class="function"> -&gt;</span> classname
+
+mixins.Formattable._name = <span class="string">'Formattable'</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

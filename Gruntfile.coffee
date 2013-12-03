@@ -17,11 +17,13 @@ module.exports = (grunt) ->
     coffee:
       compile:
         options:
+          join: true
           sourceMap: true
 
         files:
           'lib/mixins.js': [
             'src/index.coffee'
+            'src/object.coffee'
             'src/function.coffee'
             'src/mixinsjs/mixin.coffee'
             'src/mixinsjs/*.coffee'
@@ -37,7 +39,7 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: ['src/**/*.coffee', 'specs/**/*.coffee']
-        tasks: ['coffee', 'uglify', 'test']
+        tasks: ['coffee', 'uglify', 'test', 'docco']
 
     growl:
       spectacular_success:
@@ -48,10 +50,17 @@ module.exports = (grunt) ->
         title: 'Spectacular Tests'
         message: 'Some tests failed'
 
+    docco:
+      debug:
+        src: ['src/**/*.coffee']
+        options:
+          output: 'docs/'
+
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-growl')
+  grunt.loadNpmTasks('grunt-docco')
 
   grunt.registerTask 'test', 'Run npm tests', ->
     done = @async()

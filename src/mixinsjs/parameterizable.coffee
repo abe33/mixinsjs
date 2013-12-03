@@ -1,6 +1,3 @@
-# @toc
-
-## Parameterizable
 
 #
 mixins.Parameterizable = (method, parameters, allowPartial=false) ->

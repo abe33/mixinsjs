@@ -1,6 +1,3 @@
-# @toc
-
-## Poolable
 
 #
 class mixins.Poolable

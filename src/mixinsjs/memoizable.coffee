@@ -1,6 +1,3 @@
-# @toc
-
-## Memoizable
 
 # A `Memoizable` object can store data resulting of heavy methods
 # in order to speed up further call to that method.
@@ -10,7 +7,7 @@
 # in the functions's results.
 #
 #     class Dummy
-#       Memoizable.attachTo Dummy
+#       @include mixins.Memoizable
 #
 #       constructor: (@p1, @p2) ->
 #         # ...

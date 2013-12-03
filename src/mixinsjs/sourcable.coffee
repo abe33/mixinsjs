@@ -1,12 +1,9 @@
-# @toc
-
-## Sourcable
 
 # A `Sourcable` object is an object that can return the source code
 # to re-create it by code.
 #
 #     class Dummy
-#       Sourcable('geomjs.Dummy', 'p1', 'p2').attachTo Dummy
+#       @include mixins.Sourcable('geomjs.Dummy', 'p1', 'p2')
 #
 #       constructor: (@p1, @p2) ->
 #

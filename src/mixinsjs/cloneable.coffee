@@ -1,6 +1,3 @@
-# @toc
-
-## Cloneable
 
 #### Build
 
@@ -20,8 +17,11 @@ build = (klass, args) ->
 #### Cloneable
 
 # A `Cloneable` object can return a copy of itself through the `clone`
-# method. The `Cloneable` function product a different mixin when called
+# method.
+#
+# The `Cloneable` function produce a different mixin when called
 # with or without arguments.
+#
 # When called without argument, the returned mixin creates a clone using
 # a copy constructor (a constructor that initialize the current object
 # with an object).

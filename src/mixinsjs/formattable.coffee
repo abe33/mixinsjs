@@ -1,11 +1,9 @@
-# @toc
-## Formattable
 
 # A `Formattable` object provides a `toString` that return
 # a string representation of the current instance.
 #
 #     class Dummy
-#       Formattable('Dummy', 'p1', 'p2').attachTo Dummy
+#       @include mixins.Formattable('Dummy', 'p1', 'p2')
 #
 #       constructor: (@p1, @p2) ->
 #         # ...

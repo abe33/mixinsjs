@@ -1,8 +1,6 @@
-# @toc
-## Equatable
 
 # An `Equatable` object can be compared in equality with another object.
-# Objects are considered as equals if all the listed properties are equal.
+# Objects are considered as equal if all the listed properties are equal.
 #
 #     class Dummy
 #       @include mixins.Equatable('p1', 'p2')
@@ -23,6 +21,7 @@ mixins.Equatable = (properties...) ->
   # This class extends `Mixin` and can be attached as any other
   # mixin with the `attachTo` method.
   class ConcreteEquatable
+
     ##### Equatable::equals
     #
     # Compares the `properties` of the passed-in object with the current

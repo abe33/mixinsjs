@@ -132,7 +132,10 @@ findCaller = (caller, proto) ->
 
   {}
 
-addSuperMethod = (o) ->
+##### addPrototypeSuperMethod
+#
+# Creates the `super` method on the given prototype.
+addPrototypeSuperMethod = (o) ->
   ##### Object::super
   #
   # When a mixin is included into a class, a `super` method
@@ -190,6 +193,53 @@ addSuperMethod = (o) ->
       else
         throw new Error "Super called with a caller"
 
+##### addClassSuperMethod
+#
+addClassSuperMethod = (o) ->
+  unless o.super?
+    o.super = (args...) ->
+      caller = arguments.caller or @super.caller
+      if caller?
+        if caller.__super__?
+          value = caller.__super__[caller.__included__.indexOf this]
+
+          if value?
+            if typeof value is 'function'
+              value.apply(this, args)
+            else
+              throw new Error "The super for #{caller._name} isn't a function"
+          else
+            throw new Error "No super method for #{caller._name}"
+
+        else
+          # super method in the property descriptor.
+          {key, kind} = findCaller caller, this
+
+          reverseMixins = []
+          reverseMixins.unshift m for m in @__mixins__
+
+          if key?
+            # If the key is present we'll try to get a descriptor on the
+            # `__super__` class property.
+            mixin = m for m in reverseMixins when m[key]?
+
+            desc = Object.getPropertyDescriptor mixin, key
+            if desc?
+              # And if a descriptor is available we get the function
+              # corresponding to the `kind` and call it with the arguments.
+              value = desc[kind].apply(this, args)
+            else
+              # Otherwise, the value of the property is simply called.
+              value = mixin[key].apply(this, args)
+
+            return value
+          else
+            # And in other cases an error is raised.
+            throw new Error "No super method for #{caller.name || caller._name}"
+      else
+        throw new Error "Super called with a caller"
+
+
 ##### Function::include
 #
 # The `include` method inject the properties from the mixins
@@ -227,7 +277,8 @@ Function::include = (mixins...) ->
     excl = excluded.concat()
     excl = excl.concat mixin::excluded if mixin::excluded?
 
-    addSuperMethod @prototype
+    # Adds the `super` method on the prototype
+    addPrototypeSuperMethod @prototype
 
     # We loop through all the enumerable properties of the mixin's
     # prototype.
@@ -296,7 +347,7 @@ Function::include = (mixins...) ->
         if newDescriptor?
           Object.defineProperty @prototype, k, newDescriptor
         else
-          @::[k] = mixin[k]
+          @::[k] = mixin::[k]
 
     # The `included` hook is triggered on the mixin.
     mixin.included? this
@@ -305,10 +356,60 @@ Function::include = (mixins...) ->
 
 Function::extend = (mixins...) ->
   excluded = ['extended', 'excluded', 'included']
+
+  # The `__mixins__` class property will stores the mixins included
+  # in the current class.
+  @__mixins__ ||= []
+
   for mixin in mixins
+    @__mixins__.push mixin
+
     excl = excluded.concat()
     excl = excl.concat mixin.excluded if mixin.excluded?
-    @[k] = v for k,v of mixin when k not in excl
+
+    addClassSuperMethod this
+
+    keys = Object.keys mixin
+    for k in keys
+      if k not in excl
+        oldDescriptor = Object.getPropertyDescriptor this, k
+        newDescriptor = Object.getPropertyDescriptor mixin, k
+
+        if oldDescriptor? and newDescriptor?
+          oldHasAccessor = oldDescriptor.get? or oldDescriptor.set?
+          newHasAccessor = newDescriptor.get? or newDescriptor.set?
+          bothHaveGet = oldDescriptor.get? and newDescriptor.get?
+          bothHaveSet = oldDescriptor.set? and newDescriptor.set?
+          bothHaveValue = oldDescriptor.value? and newDescriptor.value?
+
+          # When both properties are accessors we'll be able to follow
+          # the super accross them
+          if oldHasAccessor and newHasAccessor
+            # Super methods are registered if both are there for getters
+            # and setters.
+            registerSuper k, newDescriptor.get, @, oldDescriptor.get, mixin if bothHaveGet
+            registerSuper k, newDescriptor.set, @, oldDescriptor.set, mixin if bothHaveSet
+
+            # If there was a getter or a setter and the new accessor
+            # doesn't define one them, the previous value is used.
+            newDescriptor.get ||= oldDescriptor.get
+            newDescriptor.set ||= oldDescriptor.set
+
+          # When both have a value, the super is also available.
+          else if bothHaveValue
+            registerSuper k, newDescriptor.value, @, oldDescriptor.value, mixin
+
+          else
+            throw new Error "Can't mix accessors and plain values inheritance"
+
+        # With a descriptor the new property is created using
+        # `Object.defineProperty` or by affecting the value
+        # to the prototype.
+        if newDescriptor?
+          Object.defineProperty this, k, newDescriptor
+        else
+          @[k] = mixin[k]
+
     mixin.extended? this
 
   this

@@ -189,13 +189,25 @@ dummy.foo      # 10</code></pre>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <h4 id="function-include">Function::include</h4>
-<p>The <code>include</code> method inject the properties from the mixins
-prototype into the target prototype.</p>
+              <h4 id="registersuper">registerSuper</h4>
+<p>This method registers a method as the super method for another
+method for the given class.
+The super methods are stored in a map structure where the <code>__included__</code>
+array stores the keys and the <code>__super__</code> array stores the values.
+A meaningful name is added to the function to know its origin.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="attribute">Function</span>::<span class="function"><span class="title">include</span> = <span class="params">(mixins...)</span> -&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">registerSuper</span> = <span class="params">(key, value, klass, sup, mixin)</span> -&gt;</span>
+  <span class="keyword">return</span> <span class="keyword">if</span> value.__included__? <span class="keyword">and</span> klass <span class="keyword">in</span> value.__included__
+
+  value.__super__ ||= []
+  value.__super__.push sup
+
+  value.__included__ ||= []
+  value.__included__.push klass
+
+  value.__name__ = sup.__name__ = <span class="string">"<span class="subst">#{mixin.name}</span>::<span class="subst">#{key}</span>"</span></pre></div></div>
             
         </li>
         
@@ -206,12 +218,26 @@ prototype into the target prototype.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>The mixins prototype constructor and excluded properties
-are always excluded.</p>
+              <h4 id="findcaller">findCaller</h4>
+<p>For a given function on an object it will find the property
+name and its kind (value/getter/setter).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  excluded = [<span class="string">'constructor'</span>, <span class="string">'excluded'</span>, <span class="string">'super'</span>]</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">findCaller</span> = <span class="params">(caller, proto)</span> -&gt;</span>
+  keys = Object.keys proto
+
+  <span class="keyword">for</span> k <span class="keyword">in</span> keys
+    descriptor = Object.getPropertyDescriptor proto, k
+
+    <span class="keyword">if</span> descriptor?
+      <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'value'</span>} <span class="keyword">if</span> descriptor.value <span class="keyword">is</span> caller
+      <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'get'</span>} <span class="keyword">if</span> descriptor.get <span class="keyword">is</span> caller
+      <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'set'</span>} <span class="keyword">if</span> descriptor.set <span class="keyword">is</span> caller
+    <span class="keyword">else</span>
+      <span class="keyword">return</span> {<span class="attribute">key</span>: k} <span class="keyword">if</span> proto[k] <span class="keyword">is</span> caller
+
+  {}</pre></div></div>
             
         </li>
         
@@ -222,12 +248,12 @@ are always excluded.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>The <code>__mixins__</code> class property will stores the mixins included
-in the current class.</p>
+              <h4 id="addprototypesupermethod">addPrototypeSuperMethod</h4>
+<p>Creates the <code>super</code> method on the given prototype.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="property">@__mixins__</span> ||= []</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">addPrototypeSuperMethod</span> = <span class="params">(o)</span> -&gt;</span></pre></div></div>
             
         </li>
         
@@ -238,14 +264,15 @@ in the current class.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>The <code>__super__</code> class property is used in CoffeeScript to store
-the parent class prototype when the <code>extend</code> keyword is used.</p>
-<p>It&#39;ll be used to store the super methods from mixins so we create
-one to use as default if we can&#39;t find it.</p>
+              <h4 id="object-super">Object::super</h4>
+<p>When a mixin is included into a class, a <code>super</code> method
+is created on its prototype. It will allow the instances
+and mixins methods to have access to their super methods.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="property">@__super__</span> ||= {}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">unless</span> o.<span class="keyword">super</span>?
+    o.<span class="function"><span class="title">super</span> = <span class="params">(args...)</span> -&gt;</span></pre></div></div>
             
         </li>
         
@@ -255,378 +282,6 @@ one to use as default if we can&#39;t find it.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <p>We create a new <code>__super__</code> using the previous one as prototype.
-It allow to have mixins overrides some properties already defined
-by a parent prototype without actually modifying this prototype.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="property">@__super__</span> = Object.create <span class="property">@__super__</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-10">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
-              </div>
-              <h5 id="registersuper">registerSuper</h5>
-<p>This method registers a method as the super method for another
-method for the given class.
-The super methods are stored in a map structure where the <code>__included__</code>
-array stores the keys and the <code>__super__</code> array stores the values.
-A meaningful name is added to the function to know its origin.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="title">registerSuper</span> = <span class="params">(key, value, klass, sup, mixin)</span> -&gt;</span>
-    <span class="keyword">return</span> <span class="keyword">if</span> value.__included__? <span class="keyword">and</span> klass <span class="keyword">in</span> value.__included__
-
-    value.__super__ ||= []
-    value.__super__.push sup
-
-    value.__included__ ||= []
-    value.__included__.push klass
-
-    value.__name__ = sup.__name__ = <span class="string">"<span class="subst">#{mixin.name}</span>::<span class="subst">#{key}</span>"</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-11">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
-              </div>
-              <h5 id="findcaller">findCaller</h5>
-<p>For a given function on an object it will find the property
-name and its kind (value/getter/setter).</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="title">findCaller</span> = <span class="params">(caller, proto)</span> -&gt;</span>
-    keys = Object.keys proto
-
-    <span class="keyword">for</span> k <span class="keyword">in</span> keys
-      descriptor = Object.getPropertyDescriptor proto, k
-
-      <span class="keyword">if</span> descriptor?
-        <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'value'</span>} <span class="keyword">if</span> descriptor.value <span class="keyword">is</span> caller
-        <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'get'</span>} <span class="keyword">if</span> descriptor.get <span class="keyword">is</span> caller
-        <span class="keyword">return</span> {<span class="attribute">key</span>: k, descriptor, <span class="attribute">kind</span>: <span class="string">'set'</span>} <span class="keyword">if</span> descriptor.set <span class="keyword">is</span> caller
-      <span class="keyword">else</span>
-        <span class="keyword">return</span> {<span class="attribute">key</span>: k} <span class="keyword">if</span> proto[k] <span class="keyword">is</span> caller
-
-    {}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-12">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
-              </div>
-              <p>For each mixin passed to the <code>include</code> class method:</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">for</span> mixin <span class="keyword">in</span> mixins</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-13">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
-              </div>
-              <p>We&#39;ll store the mixin in the <code>__mixins__</code> array to keep track of
-its inclusion.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="property">@__mixins__</span>.push mixin</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-14">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
-              </div>
-              <p>A new Array is created to store the exclusion list of the current
-mixin. It is based on the default exclusion array.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    excl = excluded.concat()
-    excl = excl.concat <span class="attribute">mixin</span>::excluded <span class="keyword">if</span> <span class="attribute">mixin</span>::excluded?</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-15">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
-              </div>
-              <p>We loop through all the enumerable properties of the mixin&#39;s
-prototype.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    keys = Object.keys mixin.prototype
-    <span class="keyword">for</span> k <span class="keyword">in</span> keys
-      <span class="keyword">if</span> k <span class="keyword">not</span> <span class="keyword">in</span> excl</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-16">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
-              </div>
-              <p>We prefer working with property descriptors rather than with
-the plain value.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        oldDescriptor = Object.getPropertyDescriptor <span class="property">@prototype</span>, k
-        newDescriptor = Object.getPropertyDescriptor mixin.prototype, k</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <p>If the two descriptors are available we&#39;ll have to go deeper.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> oldDescriptor? <span class="keyword">and</span> newDescriptor?
-          oldHasAccessor = oldDescriptor.get? <span class="keyword">or</span> oldDescriptor.set?
-          newHasAccessor = newDescriptor.get? <span class="keyword">or</span> newDescriptor.set?
-          bothHaveGet = oldDescriptor.get? <span class="keyword">and</span> newDescriptor.get?
-          bothHaveSet = oldDescriptor.set? <span class="keyword">and</span> newDescriptor.set?
-          bothHaveValue = oldDescriptor.value? <span class="keyword">and</span> newDescriptor.value?</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-18">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
-              </div>
-              <p>When both properties are accessors we&#39;ll be able to follow
-the super accross them</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> oldHasAccessor <span class="keyword">and</span> newHasAccessor</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-19">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
-              </div>
-              <p>Super methods are registered if both are there for getters
-and setters.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>            registerSuper k, newDescriptor.get, @, oldDescriptor.get, mixin <span class="keyword">if</span> bothHaveGet
-            registerSuper k, newDescriptor.set, @, oldDescriptor.set, mixin <span class="keyword">if</span> bothHaveSet</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-20">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
-              </div>
-              <p>If there was a getter or a setter and the new accessor
-doesn&#39;t define one them, the previous value is used.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>            newDescriptor.get ||= oldDescriptor.get
-            newDescriptor.set ||= oldDescriptor.set</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-21">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
-              </div>
-              <p>When both have a value, the super is also available.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>          <span class="keyword">else</span> <span class="keyword">if</span> bothHaveValue
-            registerSuper k, newDescriptor.value, @, oldDescriptor.value, mixin
-
-          <span class="keyword">else</span>
-            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Can't mix accessors and plain values inheritance"</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-22">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
-              </div>
-              <p>We also have to create the property on the class <code>__super__</code>
-property. It&#39;ll allow the method defined on the class itself
-and overriding the property to have access to its super property
-through the <code>super</code> keyword or with <code>this.super</code> method.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>          Object.defineProperty <span class="property">@__super__</span>, k, newDescriptor</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-23">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
-              </div>
-              <p>We only have a descriptor for the new property, the previous
-one is just added to the class <code>__super__</code> property.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> newDescriptor?
-          <span class="property">@__super__</span>[k] = mixin[k]</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-24">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
-              </div>
-              <p>We only have a descriptor for the previous property, we&#39;ll
-create it on the class <code>__super__</code> property.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> oldDescriptor?
-          Object.defineProperty <span class="property">@__super__</span>, k, newDescriptor</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-25">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
-              </div>
-              <p>No descriptors at all. The super property is attached directly
-to the value.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> @::[k]?
-          registerSuper k, mixin[k], @, @::[k], mixin
-          <span class="property">@__super__</span>[k] = mixin[k]</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-26">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
-              </div>
-              <p>With a descriptor the new property is created using
-<code>Object.defineProperty</code> or by affecting the value
-to the prototype.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> newDescriptor?
-          Object.defineProperty <span class="property">@prototype</span>, k, newDescriptor
-        <span class="keyword">else</span>
-          @::[k] = mixin[k]</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-27">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
-              </div>
-              <p>The <code>included</code> hook is triggered on the mixin.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    mixin.included? <span class="keyword">this</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-28">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
-              </div>
-              <h4 id="object-super">Object::super</h4>
-<p>When a mixin is included into a class, a <code>super</code> method
-is created on its prototype. It will allow the instances
-and mixins methods to have access to their super methods.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">unless</span> @::<span class="keyword">super</span>?
-    @::<span class="function"><span class="title">super</span> = <span class="params">(args...)</span> -&gt;</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-29">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>To define which function to use as super when
 calling the <code>this.super</code> method we need to know which
@@ -640,11 +295,11 @@ function is the caller.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>When the caller has a <code>__super__</code> property, we face
 a mixin method, we can access the <code>__super__</code> property
@@ -658,11 +313,11 @@ to retrieve its super property.</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>The <code>this.super</code> method can be called only if the super
 is a function.</p>
@@ -680,11 +335,11 @@ is a function.</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Without the <code>__super__</code> property we face a method declared
 in the including class and that may redefine a method from
@@ -697,11 +352,11 @@ a mixin or a parent.</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>The name of the property that stores the caller is retrieved.
 The <code>kind</code> variable is either <code>&#39;value&#39;</code>, <code>&#39;get&#39;</code>, <code>&#39;set&#39;</code>
@@ -717,11 +372,11 @@ super method in the property descriptor.</p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>If the key is present we&#39;ll try to get a descriptor on the
 <code>__super__</code> class property.</p>
@@ -734,11 +389,11 @@ super method in the property descriptor.</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>And if a descriptor is available we get the function
 corresponding to the <code>kind</code> and call it with the arguments.</p>
@@ -751,11 +406,11 @@ corresponding to the <code>kind</code> and call it with the arguments.</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Otherwise, the value of the property is simply called.</p>
 
@@ -764,19 +419,654 @@ corresponding to the <code>kind</code> and call it with the arguments.</p>
             <div class="content"><div class='highlight'><pre>              value = <span class="property">@constructor</span>.__super__[key].apply(<span class="keyword">this</span>, args)
 
             <span class="keyword">return</span> value
-          <span class="keyword">else</span>
-            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"No super method for <span class="subst">#{caller.name || caller._name}</span>"</span>
+          <span class="keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>And in other cases an error is raised.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"No super method for <span class="subst">#{caller.name || caller._name}</span>"</span>
       <span class="keyword">else</span>
-        <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Super called with a caller"</span>
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Super called with a caller"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h4 id="addclasssupermethod">addClassSuperMethod</h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">addClassSuperMethod</span> = <span class="params">(o)</span> -&gt;</span>
+  <span class="keyword">unless</span> o.<span class="keyword">super</span>?
+    o.<span class="function"><span class="title">super</span> = <span class="params">(args...)</span> -&gt;</span>
+      caller = arguments.caller <span class="keyword">or</span> <span class="property">@super</span>.caller
+      <span class="keyword">if</span> caller?
+        <span class="keyword">if</span> caller.__super__?
+          value = caller.__super__[caller.__included__.indexOf <span class="keyword">this</span>]
+
+          <span class="keyword">if</span> value?
+            <span class="keyword">if</span> <span class="keyword">typeof</span> value <span class="keyword">is</span> <span class="string">'function'</span>
+              value.apply(<span class="keyword">this</span>, args)
+            <span class="keyword">else</span>
+              <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"The super for <span class="subst">#{caller._name}</span> isn't a function"</span>
+          <span class="keyword">else</span>
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"No super method for <span class="subst">#{caller._name}</span>"</span>
+
+        <span class="keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>super method in the property descriptor.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          {key, kind} = findCaller caller, <span class="keyword">this</span>
+
+          reverseMixins = []
+          reverseMixins.unshift m <span class="keyword">for</span> m <span class="keyword">in</span> <span class="property">@__mixins__</span>
+
+          <span class="keyword">if</span> key?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>If the key is present we&#39;ll try to get a descriptor on the
+<code>__super__</code> class property.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            mixin = m <span class="keyword">for</span> m <span class="keyword">in</span> reverseMixins <span class="keyword">when</span> m[key]?
+
+            desc = Object.getPropertyDescriptor mixin, key
+            <span class="keyword">if</span> desc?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>And if a descriptor is available we get the function
+corresponding to the <code>kind</code> and call it with the arguments.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              value = desc[kind].apply(<span class="keyword">this</span>, args)
+            <span class="keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Otherwise, the value of the property is simply called.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              value = mixin[key].apply(<span class="keyword">this</span>, args)
+
+            <span class="keyword">return</span> value
+          <span class="keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>And in other cases an error is raised.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"No super method for <span class="subst">#{caller.name || caller._name}</span>"</span>
+      <span class="keyword">else</span>
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Super called with a caller"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <h4 id="function-include">Function::include</h4>
+<p>The <code>include</code> method inject the properties from the mixins
+prototype into the target prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="attribute">Function</span>::<span class="function"><span class="title">include</span> = <span class="params">(mixins...)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>The mixins prototype constructor and excluded properties
+are always excluded.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  excluded = [<span class="string">'constructor'</span>, <span class="string">'excluded'</span>, <span class="string">'super'</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>The <code>__mixins__</code> class property will stores the mixins included
+in the current class.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@__mixins__</span> ||= []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>The <code>__super__</code> class property is used in CoffeeScript to store
+the parent class prototype when the <code>extend</code> keyword is used.</p>
+<p>It&#39;ll be used to store the super methods from mixins so we create
+one to use as default if we can&#39;t find it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@__super__</span> ||= {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>We create a new <code>__super__</code> using the previous one as prototype.
+It allow to have mixins overrides some properties already defined
+by a parent prototype without actually modifying this prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@__super__</span> = Object.create <span class="property">@__super__</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>For each mixin passed to the <code>include</code> class method:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">for</span> mixin <span class="keyword">in</span> mixins</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>We&#39;ll store the mixin in the <code>__mixins__</code> array to keep track of
+its inclusion.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="property">@__mixins__</span>.push mixin</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>A new Array is created to store the exclusion list of the current
+mixin. It is based on the default exclusion array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    excl = excluded.concat()
+    excl = excl.concat <span class="attribute">mixin</span>::excluded <span class="keyword">if</span> <span class="attribute">mixin</span>::excluded?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Adds the <code>super</code> method on the prototype</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    addPrototypeSuperMethod <span class="property">@prototype</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>We loop through all the enumerable properties of the mixin&#39;s
+prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    keys = Object.keys mixin.prototype
+    <span class="keyword">for</span> k <span class="keyword">in</span> keys
+      <span class="keyword">if</span> k <span class="keyword">not</span> <span class="keyword">in</span> excl</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>We prefer working with property descriptors rather than with
+the plain value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        oldDescriptor = Object.getPropertyDescriptor <span class="property">@prototype</span>, k
+        newDescriptor = Object.getPropertyDescriptor mixin.prototype, k</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>If the two descriptors are available we&#39;ll have to go deeper.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> oldDescriptor? <span class="keyword">and</span> newDescriptor?
+          oldHasAccessor = oldDescriptor.get? <span class="keyword">or</span> oldDescriptor.set?
+          newHasAccessor = newDescriptor.get? <span class="keyword">or</span> newDescriptor.set?
+          bothHaveGet = oldDescriptor.get? <span class="keyword">and</span> newDescriptor.get?
+          bothHaveSet = oldDescriptor.set? <span class="keyword">and</span> newDescriptor.set?
+          bothHaveValue = oldDescriptor.value? <span class="keyword">and</span> newDescriptor.value?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>When both properties are accessors we&#39;ll be able to follow
+the super accross them</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> oldHasAccessor <span class="keyword">and</span> newHasAccessor</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Super methods are registered if both are there for getters
+and setters.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            registerSuper k, newDescriptor.get, @, oldDescriptor.get, mixin <span class="keyword">if</span> bothHaveGet
+            registerSuper k, newDescriptor.set, @, oldDescriptor.set, mixin <span class="keyword">if</span> bothHaveSet</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>If there was a getter or a setter and the new accessor
+doesn&#39;t define one them, the previous value is used.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            newDescriptor.get ||= oldDescriptor.get
+            newDescriptor.set ||= oldDescriptor.set</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>When both have a value, the super is also available.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">else</span> <span class="keyword">if</span> bothHaveValue
+            registerSuper k, newDescriptor.value, @, oldDescriptor.value, mixin
+
+          <span class="keyword">else</span>
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Can't mix accessors and plain values inheritance"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>We also have to create the property on the class <code>__super__</code>
+property. It&#39;ll allow the method defined on the class itself
+and overriding the property to have access to its super property
+through the <code>super</code> keyword or with <code>this.super</code> method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          Object.defineProperty <span class="property">@__super__</span>, k, newDescriptor</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>We only have a descriptor for the new property, the previous
+one is just added to the class <code>__super__</code> property.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> newDescriptor?
+          <span class="property">@__super__</span>[k] = mixin[k]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>We only have a descriptor for the previous property, we&#39;ll
+create it on the class <code>__super__</code> property.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> oldDescriptor?
+          Object.defineProperty <span class="property">@__super__</span>, k, newDescriptor</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>No descriptors at all. The super property is attached directly
+to the value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span> <span class="keyword">if</span> @::[k]?
+          registerSuper k, mixin[k], @, @::[k], mixin
+          <span class="property">@__super__</span>[k] = mixin[k]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>With a descriptor the new property is created using
+<code>Object.defineProperty</code> or by affecting the value
+to the prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> newDescriptor?
+          Object.defineProperty <span class="property">@prototype</span>, k, newDescriptor
+        <span class="keyword">else</span>
+          @::[k] = <span class="attribute">mixin</span>::[k]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>The <code>included</code> hook is triggered on the mixin.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mixin.included? <span class="keyword">this</span>
 
   <span class="keyword">this</span>
 
 <span class="attribute">Function</span>::<span class="function"><span class="title">extend</span> = <span class="params">(mixins...)</span> -&gt;</span>
-  excluded = [<span class="string">'extended'</span>, <span class="string">'excluded'</span>, <span class="string">'included'</span>]
+  excluded = [<span class="string">'extended'</span>, <span class="string">'excluded'</span>, <span class="string">'included'</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>The <code>__mixins__</code> class property will stores the mixins included
+in the current class.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@__mixins__</span> ||= []
+
   <span class="keyword">for</span> mixin <span class="keyword">in</span> mixins
+    <span class="property">@__mixins__</span>.push mixin
+
     excl = excluded.concat()
     excl = excl.concat mixin.excluded <span class="keyword">if</span> mixin.excluded?
-    @[k] = v <span class="keyword">for</span> k,v <span class="keyword">of</span> mixin <span class="keyword">when</span> k <span class="keyword">not</span> <span class="keyword">in</span> excl
+
+    addClassSuperMethod <span class="keyword">this</span>
+
+    keys = Object.keys mixin
+    <span class="keyword">for</span> k <span class="keyword">in</span> keys
+      <span class="keyword">if</span> k <span class="keyword">not</span> <span class="keyword">in</span> excl
+        oldDescriptor = Object.getPropertyDescriptor <span class="keyword">this</span>, k
+        newDescriptor = Object.getPropertyDescriptor mixin, k
+
+        <span class="keyword">if</span> oldDescriptor? <span class="keyword">and</span> newDescriptor?
+          oldHasAccessor = oldDescriptor.get? <span class="keyword">or</span> oldDescriptor.set?
+          newHasAccessor = newDescriptor.get? <span class="keyword">or</span> newDescriptor.set?
+          bothHaveGet = oldDescriptor.get? <span class="keyword">and</span> newDescriptor.get?
+          bothHaveSet = oldDescriptor.set? <span class="keyword">and</span> newDescriptor.set?
+          bothHaveValue = oldDescriptor.value? <span class="keyword">and</span> newDescriptor.value?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>When both properties are accessors we&#39;ll be able to follow
+the super accross them</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> oldHasAccessor <span class="keyword">and</span> newHasAccessor</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>Super methods are registered if both are there for getters
+and setters.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            registerSuper k, newDescriptor.get, @, oldDescriptor.get, mixin <span class="keyword">if</span> bothHaveGet
+            registerSuper k, newDescriptor.set, @, oldDescriptor.set, mixin <span class="keyword">if</span> bothHaveSet</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>If there was a getter or a setter and the new accessor
+doesn&#39;t define one them, the previous value is used.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            newDescriptor.get ||= oldDescriptor.get
+            newDescriptor.set ||= oldDescriptor.set</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>When both have a value, the super is also available.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">else</span> <span class="keyword">if</span> bothHaveValue
+            registerSuper k, newDescriptor.value, @, oldDescriptor.value, mixin
+
+          <span class="keyword">else</span>
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Can't mix accessors and plain values inheritance"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>With a descriptor the new property is created using
+<code>Object.defineProperty</code> or by affecting the value
+to the prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> newDescriptor?
+          Object.defineProperty <span class="keyword">this</span>, k, newDescriptor
+        <span class="keyword">else</span>
+          @[k] = mixin[k]
+
     mixin.extended? <span class="keyword">this</span>
 
   <span class="keyword">this</span>

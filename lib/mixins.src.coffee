@@ -135,14 +135,14 @@ findCaller = (caller, proto) ->
 ##### addPrototypeSuperMethod
 #
 # Creates the `super` method on the given prototype.
-addPrototypeSuperMethod = (o) ->
+addPrototypeSuperMethod = (target) ->
   ##### Object::super
   #
   # When a mixin is included into a class, a `super` method
   # is created on its prototype. It will allow the instances
   # and mixins methods to have access to their super methods.
-  unless o.super?
-    o.super = (args...) ->
+  unless target.super?
+    target.super = (args...) ->
       # To define which function to use as super when
       # calling the `this.super` method we need to know which
       # function is the caller.
@@ -855,6 +855,27 @@ mixins.Globalizable._name = 'Globalizable'
 
 
 
+
+mixins.HasAncestors = (options={}) ->
+  through = options.through or 'parent'
+
+  class ConcreteHasAncestors
+    @getter 'ancestors', ->
+      ancestors = []
+      parent = @[ through ]
+
+      while parent?
+        ancestors.push parent
+        parent = parent[ through ]
+
+      ancestors
+
+    @getter 'selfAndAncestors', -> [ this ].concat @ancestors
+
+    @ancestorsScope: (name, block) ->
+      @getter name, -> @ancestors.filter(block, this)
+
+mixins.HasAncestors._name = 'HasAncestors'
 
 
 # A `Memoizable` object can store data resulting of heavy methods

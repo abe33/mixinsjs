@@ -59,6 +59,11 @@
               </a>
             
               
+              <a class="source" href="has_ancestors.html">
+                has_ancestors.coffee
+              </a>
+            
+              
               <a class="source" href="memoizable.html">
                 memoizable.coffee
               </a>
@@ -253,7 +258,7 @@ name and its kind (value/getter/setter).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">addPrototypeSuperMethod</span> = <span class="params">(o)</span> -&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">addPrototypeSuperMethod</span> = <span class="params">(target)</span> -&gt;</span></pre></div></div>
             
         </li>
         
@@ -271,8 +276,8 @@ and mixins methods to have access to their super methods.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">unless</span> o.<span class="keyword">super</span>?
-    o.<span class="function"><span class="title">super</span> = <span class="params">(args...)</span> -&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">unless</span> target.<span class="keyword">super</span>?
+    target.<span class="function"><span class="title">super</span> = <span class="params">(args...)</span> -&gt;</span></pre></div></div>
             
         </li>
         

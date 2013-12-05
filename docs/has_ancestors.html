@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>equatable.coffee</title>
+  <title>has_ancestors.coffee</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -96,7 +96,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>equatable.coffee</h1>
+                  <h1>has_ancestors.coffee</h1>
               </div>
           </li>
         
@@ -111,70 +111,26 @@
               
             </div>
             
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
-              </div>
-              <p>An <code>Equatable</code> object can be compared in equality with another object.
-Objects are considered as equal if all the listed properties are equal.</p>
-<pre><code>class Dummy
-  @include mixins.Equatable(&#39;p1&#39;, &#39;p2&#39;)
+            <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">HasAncestors</span> = <span class="params">(options={})</span> -&gt;</span>
+  through = options.through <span class="keyword">or</span> <span class="string">'parent'</span>
 
-  constructor: (@p1, @p2) -&gt;
-    # ...
+  <span class="class"><span class="keyword">class</span> <span class="title">ConcreteHasAncestors</span></span>
+    <span class="property">@getter</span> <span class="string">'ancestors'</span>,<span class="function"> -&gt;</span>
+      ancestors = []
+      parent = @[ through ]
 
-dummy = new Dummy(10, &#39;foo&#39;)
-dummy.equals p1: 10, p2: &#39;foo&#39;   # true
-dummy.equals new Dummy(5, &#39;bar&#39;) # false</code></pre>
-<p>The <code>Equatable</code> mixin is called a parameterized mixin as
-it&#39;s in fact a function that will generate a mixin based
-on its arguments.</p>
+      <span class="keyword">while</span> parent?
+        ancestors.push parent
+        parent = parent[ through ]
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">Equatable</span> = <span class="params">(properties...)</span> -&gt;</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>A concrete class is generated and returned by <code>Equatable</code>.
-This class extends <code>Mixin</code> and can be attached as any other
-mixin with the <code>attachTo</code> method.</p>
+      ancestors
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="class"><span class="keyword">class</span> <span class="title">ConcreteEquatable</span></span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <h4 id="equatable-equals">Equatable::equals</h4>
-<p>Compares the <code>properties</code> of the passed-in object with the current
-object and return <code>true</code> if all the values are equal.</p>
+    <span class="property">@getter</span> <span class="string">'selfAndAncestors'</span>,<span class="function"> -&gt;</span> [ <span class="keyword">this</span> ].concat <span class="property">@ancestors</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="attribute">equals</span>: <span class="function"><span class="params">(o)</span> -&gt;</span> o? <span class="keyword">and</span> properties.every <span class="function"><span class="params">(p)</span> =&gt;</span>
-      <span class="keyword">if</span> @[p].equals? <span class="keyword">then</span> @[p].equals o[p] <span class="keyword">else</span> o[p] <span class="keyword">is</span> @[p]
+    <span class="property">@ancestorsScope</span>: <span class="function"><span class="params">(name, block)</span> -&gt;</span>
+      <span class="property">@getter</span> name,<span class="function"> -&gt;</span> <span class="property">@ancestors</span>.filter(block, <span class="keyword">this</span>)
 
-mixins.Equatable._name = <span class="string">'Equatable'</span></pre></div></div>
+mixins.HasAncestors._name = <span class="string">'HasAncestors'</span></pre></div></div>
             
         </li>
         

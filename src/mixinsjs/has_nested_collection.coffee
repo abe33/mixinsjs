@@ -18,14 +18,14 @@ mixins.HasNestedCollection = (name, options={}) ->
   throw new Error('missing through option') unless through?
 
   class ConcreteHasNestedCollection
-    ##### HasNestedCollection::<name>Scope
+    ##### HasNestedCollection::&lt;name&gt;Scope
     #
     # Creates a property on instances that filters the nested collections
     # items using the passed-in `block`.
     @[ "#{ name }Scope" ] = (scopeName, block) ->
       @getter scopeName, -> @[ name ].filter block, this
 
-    ##### HasCollection::<name>
+    ##### HasCollection::&lt;name&gt;
     #
     # Returns a flat array containing all the items contained in all the
     # nested collections.

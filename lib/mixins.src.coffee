@@ -9,6 +9,9 @@ mixins = exports
 
 mixins.version = '0.1.2'
 
+mixins.CAMEL_CASE = 'camel'
+mixins.SNAKE_CASE = 'snake'
+
 mixins.deprecated = (message) ->
   parseLine = (line) ->
     if line.indexOf('@') > 0
@@ -593,7 +596,7 @@ class mixins.Delegation
   @delegate: (properties..., options={}) ->
     delegated = options.to
     prefixed = options.prefix
-    _case = options.case or 'camel'
+    _case = options.case or mixins.CAMEL_CASE
 
     properties.forEach (property) =>
       localAlias = property
@@ -601,9 +604,9 @@ class mixins.Delegation
       # Currently, only `camel`, and `snake` cases are supported.
       if prefixed
         switch _case
-          when 'snake'
+          when mixins.SNAKE_CASE
             localAlias = delegated + '_' + property
-          when 'camel'
+          when mixins.CAMEL_CASE
             localAlias = delegated + property.replace /^./, (m) ->
               m.toUpperCase()
 

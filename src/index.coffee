@@ -9,6 +9,9 @@ mixins = exports
 
 mixins.version = '0.1.2'
 
+mixins.CAMEL_CASE = 'camel'
+mixins.SNAKE_CASE = 'snake'
+
 mixins.deprecated = (message) ->
   parseLine = (line) ->
     if line.indexOf('@') > 0

@@ -187,11 +187,11 @@ is always accessible through an instance.</p>
             
             <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> properties.length <span class="keyword">is</span> <span class="number">0</span>
       <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
-        <span class="string">"[<span class="subst">#{classname}</span>]"</span>
+        <span class="string">"[<span class="subst">#{ classname }</span>]"</span>
     <span class="keyword">else</span>
       <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
-        formattedProperties = (<span class="string">"<span class="subst">#{p}</span>=<span class="subst">#{@[p]}</span>"</span> <span class="keyword">for</span> p <span class="keyword">in</span> properties)
-        <span class="string">"[<span class="subst">#{classname}</span>(<span class="subst">#{formattedProperties.join <span class="string">', '</span>}</span>)]"</span></pre></div></div>
+        formattedProperties = (<span class="string">"<span class="subst">#{ p }</span>=<span class="subst">#{ @[ p ] }</span>"</span> <span class="keyword">for</span> p <span class="keyword">in</span> properties)
+        <span class="string">"[<span class="subst">#{ classname }</span>(<span class="subst">#{ formattedProperties.join <span class="string">', '</span> }</span>)]"</span></pre></div></div>
             
         </li>
         

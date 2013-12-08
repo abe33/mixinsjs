@@ -6,12 +6,12 @@
 # the `Function` constructor.
 BUILDS = (
   new Function( "return new arguments[0](#{
-    ("arguments[1][#{j-1}]" for j in [0..i] when j isnt 0 ).join ","
-  });") for i in [0..24]
+    ("arguments[1][#{ j-1 }]" for j in [ 0..i ] when j isnt 0).join ","
+  });") for i in [ 0..24 ]
 )
 
 build = (klass, args) ->
-  f = BUILDS[if args? then args.length else 0]
+  f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
 #### Cloneable
@@ -53,6 +53,6 @@ mixins.Cloneable = (properties...) ->
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this
     else
-      @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[p]
+      @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[ p ]
 
 mixins.Cloneable._name = 'Cloneable'

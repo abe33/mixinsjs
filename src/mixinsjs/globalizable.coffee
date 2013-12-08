@@ -104,10 +104,10 @@ mixins.Globalizable = (global, keepContext=true) ->
       # If we have a property descriptor for the previous global property
       # we store it to restore it in the `unglobalize` process.
       if oldDescriptor?
-        @previousDescriptors[key] = oldDescriptor
+        @previousDescriptors[ key ] = oldDescriptor
       # Otherwise the property value is stored.
-      else if @[key]?
-        @previousValues[key] = global if global[key]?
+      else if @[ key ]?
+        @previousValues[ key ] = global if global[ key ]?
 
       # If we have a property descriptor for the object property, we'll
       # use it to create the property on global with the same settings.
@@ -132,7 +132,7 @@ mixins.Globalizable = (global, keepContext=true) ->
       # the value is retreived and used to create a new property
       # descriptor.
       else
-        value = @[key]
+        value = @[ key ]
         value = value.bind(@) if typeof value is 'function' and keepContext
         Object.defineProperty global, key, {
           value
@@ -146,17 +146,17 @@ mixins.Globalizable = (global, keepContext=true) ->
     # The inverse process of `globalizeMember`.
     unglobalizeMember: (key) ->
       # If we have a previous descriptor we restore ot on global.
-      if @previousDescriptors[key]?
-        Object.defineProperty global, key, @previousDescriptors[key]
+      if @previousDescriptors[ key ]?
+        Object.defineProperty global, key, @previousDescriptors[ key ]
 
       # If there's no previous descriptor but a previous value,
       # the value is affected to the global property.
-      else if @previousValues[key]?
-        global[key] = @previousValues[key]
+      else if @previousValues[ key ]?
+        global[ key ] = @previousValues[ key ]
 
       # And if there's nothing the property is unset.
       else
-        global[key] = undefined
+        global[ key ] = undefined
 
 mixins.Globalizable._name = 'Globalizable'
 

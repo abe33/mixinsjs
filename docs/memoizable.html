@@ -177,7 +177,7 @@ memoization key, the whole data stored in the memo are cleared.</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="attribute">memoized</span>: <span class="function"><span class="params">(prop)</span> -&gt;</span>
     <span class="keyword">if</span> <span class="property">@memoizationKey</span>() <span class="keyword">is</span> <span class="property">@__memoizationKey__</span>
-      <span class="property">@__memo__</span>?[prop]?
+      <span class="property">@__memo__</span>?[ prop ]?
     <span class="keyword">else</span>
       <span class="property">@__memo__</span> = {}
       <span class="literal">false</span></pre></div></div>
@@ -196,7 +196,7 @@ memoization key, the whole data stored in the memo are cleared.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="attribute">memoFor</span>: <span class="function"><span class="params">(prop)</span> -&gt;</span> <span class="property">@__memo__</span>[prop]</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="attribute">memoFor</span>: <span class="function"><span class="params">(prop)</span> -&gt;</span> <span class="property">@__memo__</span>[ prop ]</pre></div></div>
             
         </li>
         
@@ -217,7 +217,7 @@ object.</p>
             <div class="content"><div class='highlight'><pre>  <span class="attribute">memoize</span>: <span class="function"><span class="params">(prop, value)</span> -&gt;</span>
     <span class="property">@__memo__</span> ||= {}
     <span class="property">@__memoizationKey__</span> = <span class="property">@memoizationKey</span>()
-    <span class="property">@__memo__</span>[prop] = value</pre></div></div>
+    <span class="property">@__memo__</span>[ prop ] = value</pre></div></div>
             
         </li>
         

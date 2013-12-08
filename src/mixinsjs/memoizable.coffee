@@ -29,7 +29,7 @@ class mixins.Memoizable
   # memoization key, the whole data stored in the memo are cleared.
   memoized: (prop) ->
     if @memoizationKey() is @__memoizationKey__
-      @__memo__?[prop]?
+      @__memo__?[ prop ]?
     else
       @__memo__ = {}
       false
@@ -37,7 +37,7 @@ class mixins.Memoizable
   ##### Memoizable::memoFor
   #
   # Returns the memoized data for the given `prop`.
-  memoFor: (prop) -> @__memo__[prop]
+  memoFor: (prop) -> @__memo__[ prop ]
 
   ##### Memoizable::memoize
   #
@@ -47,7 +47,7 @@ class mixins.Memoizable
   memoize: (prop, value) ->
     @__memo__ ||= {}
     @__memoizationKey__ = @memoizationKey()
-    @__memo__[prop] = value
+    @__memo__[ prop ] = value
 
   ##### Memoizable::memoizationKey
   #

@@ -21,22 +21,22 @@ mixins.Sourcable = (name, signature...) ->
         when 'object'
           isArray = Object::toString.call(value).indexOf('Array') isnt -1
           if isArray
-            "[#{value.map (el) -> sourceFor el}]"
+            "[#{ value.map (el) -> sourceFor el }]"
           else
             if value.toSource?
               value.toSource()
             else
               value
         when 'string'
-          "'#{value.replace "'", "\\'"}'"
+          "'#{ value.replace "'", "\\'" }'"
         else value
 
     ##### Sourcable::toSource
     #
     # Return the source code corresponding to the current instance.
     toSource: ->
-      args = (@[arg] for arg in signature).map (o) -> sourceFor o
+      args = (@[ arg ] for arg in signature).map (o) -> sourceFor o
 
-      "new #{name}(#{args.join ','})"
+      "new #{ name }(#{ args.join ',' })"
 
 mixins.Sourcable._name = 'Sourcable'

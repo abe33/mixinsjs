@@ -183,14 +183,14 @@ mixin with the <code>attachTo</code> method.</p>
         <span class="keyword">when</span> <span class="string">'object'</span>
           isArray = <span class="attribute">Object</span>::toString.call(value).indexOf(<span class="string">'Array'</span>) <span class="keyword">isnt</span> -<span class="number">1</span>
           <span class="keyword">if</span> isArray
-            <span class="string">"[<span class="subst">#{value.map (el) -&gt; sourceFor el}</span>]"</span>
+            <span class="string">"[<span class="subst">#{ value.map (el) -&gt; sourceFor el }</span>]"</span>
           <span class="keyword">else</span>
             <span class="keyword">if</span> value.toSource?
               value.toSource()
             <span class="keyword">else</span>
               value
         <span class="keyword">when</span> <span class="string">'string'</span>
-          <span class="string">"'<span class="subst">#{value.replace <span class="string">"'"</span>, <span class="string">"\\'"</span>}</span>'"</span>
+          <span class="string">"'<span class="subst">#{ value.replace <span class="string">"'"</span>, <span class="string">"\\'"</span> }</span>'"</span>
         <span class="keyword">else</span> value</pre></div></div>
             
         </li>
@@ -208,9 +208,9 @@ mixin with the <code>attachTo</code> method.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="attribute">toSource</span>:<span class="function"> -&gt;</span>
-      <span class="function"><span class="title">args</span> = <span class="params">(@[arg] <span class="keyword">for</span> arg <span class="keyword">in</span> signature)</span>.<span class="title">map</span> <span class="params">(o)</span> -&gt;</span> sourceFor o
+      <span class="function"><span class="title">args</span> = <span class="params">(@[ arg ] <span class="keyword">for</span> arg <span class="keyword">in</span> signature)</span>.<span class="title">map</span> <span class="params">(o)</span> -&gt;</span> sourceFor o
 
-      <span class="string">"new <span class="subst">#{name}</span>(<span class="subst">#{args.join <span class="string">','</span>}</span>)"</span>
+      <span class="string">"new <span class="subst">#{ name }</span>(<span class="subst">#{ args.join <span class="string">','</span> }</span>)"</span>
 
 mixins.Sourcable._name = <span class="string">'Sourcable'</span></pre></div></div>
             

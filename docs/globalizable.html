@@ -380,7 +380,7 @@ we store it to restore it in the <code>unglobalize</code> process.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> oldDescriptor?
-        <span class="property">@previousDescriptors</span>[key] = oldDescriptor</pre></div></div>
+        <span class="property">@previousDescriptors</span>[ key ] = oldDescriptor</pre></div></div>
             
         </li>
         
@@ -395,8 +395,8 @@ we store it to restore it in the <code>unglobalize</code> process.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span> <span class="keyword">if</span> @[key]?
-        <span class="property">@previousValues</span>[key] = <span class="built_in">global</span> <span class="keyword">if</span> <span class="built_in">global</span>[key]?</pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span> <span class="keyword">if</span> @[ key ]?
+        <span class="property">@previousValues</span>[ key ] = <span class="built_in">global</span> <span class="keyword">if</span> <span class="built_in">global</span>[ key ]?</pre></div></div>
             
         </li>
         
@@ -496,7 +496,7 @@ descriptor.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span>
-        value = @[key]
+        value = @[ key ]
         value = value.bind(@) <span class="keyword">if</span> <span class="keyword">typeof</span> value <span class="keyword">is</span> <span class="string">'function'</span> <span class="keyword">and</span> keepContext
         Object.defineProperty <span class="built_in">global</span>, key, {
           value
@@ -534,8 +534,8 @@ descriptor.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> <span class="property">@previousDescriptors</span>[key]?
-        Object.defineProperty <span class="built_in">global</span>, key, <span class="property">@previousDescriptors</span>[key]</pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> <span class="property">@previousDescriptors</span>[ key ]?
+        Object.defineProperty <span class="built_in">global</span>, key, <span class="property">@previousDescriptors</span>[ key ]</pre></div></div>
             
         </li>
         
@@ -551,8 +551,8 @@ the value is affected to the global property.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span> <span class="keyword">if</span> <span class="property">@previousValues</span>[key]?
-        <span class="built_in">global</span>[key] = <span class="property">@previousValues</span>[key]</pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span> <span class="keyword">if</span> <span class="property">@previousValues</span>[ key ]?
+        <span class="built_in">global</span>[ key ] = <span class="property">@previousValues</span>[ key ]</pre></div></div>
             
         </li>
         
@@ -568,7 +568,7 @@ the value is affected to the global property.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span>
-        <span class="built_in">global</span>[key] = <span class="literal">undefined</span>
+        <span class="built_in">global</span>[ key ] = <span class="literal">undefined</span>
 
 mixins.Globalizable._name = <span class="string">'Globalizable'</span></pre></div></div>
             

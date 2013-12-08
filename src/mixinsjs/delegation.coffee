@@ -71,6 +71,6 @@ class mixins.Delegation
       Object.defineProperty @prototype, localAlias, {
         enumerable: true
         configurable: true
-        get: -> @[delegated][property]
-        set: (value) -> @[delegated][property] = value
+        get: -> @[ delegated ][ property ]
+        set: (value) -> @[ delegated ][ property ] = value
       }

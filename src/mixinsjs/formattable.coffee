@@ -26,11 +26,11 @@ mixins.Formattable = (classname, properties...) ->
     # Returns the string reprensentation of this instance.
     if properties.length is 0
       ConcretFormattable::toString = ->
-        "[#{classname}]"
+        "[#{ classname }]"
     else
       ConcretFormattable::toString = ->
-        formattedProperties = ("#{p}=#{@[p]}" for p in properties)
-        "[#{classname}(#{formattedProperties.join ', '})]"
+        formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
+        "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
     ##### Formattable::classname
     #

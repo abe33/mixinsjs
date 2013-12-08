@@ -144,12 +144,12 @@ the <code>Function</code> constructor.</p>
             
             <div class="content"><div class='highlight'><pre>BUILDS = (
   <span class="keyword">new</span> Function( <span class="string">"return new arguments[0](<span class="subst">#{
-    (<span class="string">"arguments[1][<span class="subst">#{j-<span class="number">1</span>}</span>]"</span> <span class="keyword">for</span> j <span class="keyword">in</span> [<span class="number">0.</span>.i] <span class="keyword">when</span> j <span class="keyword">isnt</span> <span class="number">0</span> ).join <span class="string">","</span>
-  }</span>);"</span>) <span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">0.</span><span class="number">.24</span>]
+    (<span class="string">"arguments[1][<span class="subst">#{ j-<span class="number">1</span> }</span>]"</span> <span class="keyword">for</span> j <span class="keyword">in</span> [ <span class="number">0.</span>.i ] <span class="keyword">when</span> j <span class="keyword">isnt</span> <span class="number">0</span>).join <span class="string">","</span>
+  }</span>);"</span>) <span class="keyword">for</span> i <span class="keyword">in</span> [ <span class="number">0.</span><span class="number">.24</span> ]
 )
 
 <span class="function"><span class="title">build</span> = <span class="params">(klass, args)</span> -&gt;</span>
-  f = BUILDS[<span class="keyword">if</span> args? <span class="keyword">then</span> args.length <span class="keyword">else</span> <span class="number">0</span>]
+  f = BUILDS[ <span class="keyword">if</span> args? <span class="keyword">then</span> args.length <span class="keyword">else</span> <span class="number">0</span> ]
   f klass, args</pre></div></div>
             
         </li>
@@ -197,7 +197,7 @@ otherInstance = instance.clone()
     <span class="keyword">if</span> properties.length <span class="keyword">is</span> <span class="number">0</span>
       <span class="property">@included</span>: <span class="function"><span class="params">(klass)</span> -&gt;</span> <span class="attribute">klass</span>::<span class="function"><span class="title">clone</span> = -&gt;</span> <span class="keyword">new</span> klass <span class="keyword">this</span>
     <span class="keyword">else</span>
-      <span class="property">@included</span>: <span class="function"><span class="params">(klass)</span> -&gt;</span> <span class="attribute">klass</span>::<span class="function"><span class="title">clone</span> = -&gt;</span> build klass, properties.map <span class="function"><span class="params">(p)</span> =&gt;</span> @[p]
+      <span class="property">@included</span>: <span class="function"><span class="params">(klass)</span> -&gt;</span> <span class="attribute">klass</span>::<span class="function"><span class="title">clone</span> = -&gt;</span> build klass, properties.map <span class="function"><span class="params">(p)</span> =&gt;</span> @[ p ]
 
 mixins.Cloneable._name = <span class="string">'Cloneable'</span></pre></div></div>
             

@@ -27,6 +27,6 @@ mixins.Equatable = (properties...) ->
     # Compares the `properties` of the passed-in object with the current
     # object and return `true` if all the values are equal.
     equals: (o) -> o? and properties.every (p) =>
-      if @[p].equals? then @[p].equals o[p] else o[p] is @[p]
+      if @[ p ].equals? then @[ p ].equals o[ p ] else o[p] is @[ p ]
 
 mixins.Equatable._name = 'Equatable'

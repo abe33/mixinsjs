@@ -48,7 +48,7 @@ class mixins.Poolable
 
   # Default `init` implementation, just copy all the options
   # in the instance.
-  init: (options={}) -> @[k] = v for k,v of options
+  init: (options={}) -> @[ k ] = v for k,v of options
 
   #### Poolable::dispose
 

@@ -482,7 +482,7 @@ class mixins.AlternateCase
   @toCamelCase: (str) ->
     a = str.toLowerCase().split(/[_\s-]/)
     s = a.shift()
-    s = "#{s}#{utils.capitalize w}" for w in a
+    s = "#{ s }#{ utils.capitalize w }" for w in a
     s
 
   # Adds the specified alternatives of each properties on the current
@@ -513,12 +513,12 @@ class mixins.AlternateCase
 # the `Function` constructor.
 BUILDS = (
   new Function( "return new arguments[0](#{
-    ("arguments[1][#{j-1}]" for j in [0..i] when j isnt 0 ).join ","
-  });") for i in [0..24]
+    ("arguments[1][#{ j-1 }]" for j in [ 0..i ] when j isnt 0).join ","
+  });") for i in [ 0..24 ]
 )
 
 build = (klass, args) ->
-  f = BUILDS[if args? then args.length else 0]
+  f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
 #### Cloneable
@@ -560,7 +560,7 @@ mixins.Cloneable = (properties...) ->
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this
     else
-      @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[p]
+      @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[ p ]
 
 mixins.Cloneable._name = 'Cloneable'
 
@@ -637,8 +637,8 @@ class mixins.Delegation
       Object.defineProperty @prototype, localAlias, {
         enumerable: true
         configurable: true
-        get: -> @[delegated][property]
-        set: (value) -> @[delegated][property] = value
+        get: -> @[ delegated ][ property ]
+        set: (value) -> @[ delegated ][ property ] = value
       }
 
 
@@ -670,7 +670,7 @@ mixins.Equatable = (properties...) ->
     # Compares the `properties` of the passed-in object with the current
     # object and return `true` if all the values are equal.
     equals: (o) -> o? and properties.every (p) =>
-      if @[p].equals? then @[p].equals o[p] else o[p] is @[p]
+      if @[ p ].equals? then @[ p ].equals o[ p ] else o[p] is @[ p ]
 
 mixins.Equatable._name = 'Equatable'
 
@@ -702,11 +702,11 @@ mixins.Formattable = (classname, properties...) ->
     # Returns the string reprensentation of this instance.
     if properties.length is 0
       ConcretFormattable::toString = ->
-        "[#{classname}]"
+        "[#{ classname }]"
     else
       ConcretFormattable::toString = ->
-        formattedProperties = ("#{p}=#{@[p]}" for p in properties)
-        "[#{classname}(#{formattedProperties.join ', '})]"
+        formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
+        "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
     ##### Formattable::classname
     #
@@ -821,10 +821,10 @@ mixins.Globalizable = (global, keepContext=true) ->
       # If we have a property descriptor for the previous global property
       # we store it to restore it in the `unglobalize` process.
       if oldDescriptor?
-        @previousDescriptors[key] = oldDescriptor
+        @previousDescriptors[ key ] = oldDescriptor
       # Otherwise the property value is stored.
-      else if @[key]?
-        @previousValues[key] = global if global[key]?
+      else if @[ key ]?
+        @previousValues[ key ] = global if global[ key ]?
 
       # If we have a property descriptor for the object property, we'll
       # use it to create the property on global with the same settings.
@@ -849,7 +849,7 @@ mixins.Globalizable = (global, keepContext=true) ->
       # the value is retreived and used to create a new property
       # descriptor.
       else
-        value = @[key]
+        value = @[ key ]
         value = value.bind(@) if typeof value is 'function' and keepContext
         Object.defineProperty global, key, {
           value
@@ -863,17 +863,17 @@ mixins.Globalizable = (global, keepContext=true) ->
     # The inverse process of `globalizeMember`.
     unglobalizeMember: (key) ->
       # If we have a previous descriptor we restore ot on global.
-      if @previousDescriptors[key]?
-        Object.defineProperty global, key, @previousDescriptors[key]
+      if @previousDescriptors[ key ]?
+        Object.defineProperty global, key, @previousDescriptors[ key ]
 
       # If there's no previous descriptor but a previous value,
       # the value is affected to the global property.
-      else if @previousValues[key]?
-        global[key] = @previousValues[key]
+      else if @previousValues[ key ]?
+        global[ key ] = @previousValues[ key ]
 
       # And if there's nothing the property is unset.
       else
-        global[key] = undefined
+        global[ key ] = undefined
 
 mixins.Globalizable._name = 'Globalizable'
 
@@ -1083,7 +1083,7 @@ class mixins.Memoizable
   # memoization key, the whole data stored in the memo are cleared.
   memoized: (prop) ->
     if @memoizationKey() is @__memoizationKey__
-      @__memo__?[prop]?
+      @__memo__?[ prop ]?
     else
       @__memo__ = {}
       false
@@ -1091,7 +1091,7 @@ class mixins.Memoizable
   ##### Memoizable::memoFor
   #
   # Returns the memoized data for the given `prop`.
-  memoFor: (prop) -> @__memo__[prop]
+  memoFor: (prop) -> @__memo__[ prop ]
 
   ##### Memoizable::memoize
   #
@@ -1101,7 +1101,7 @@ class mixins.Memoizable
   memoize: (prop, value) ->
     @__memo__ ||= {}
     @__memoizationKey__ = @memoizationKey()
-    @__memo__[prop] = value
+    @__memo__[ prop ] = value
 
   ##### Memoizable::memoizationKey
   #
@@ -1124,19 +1124,19 @@ mixins.Parameterizable = (method, parameters, allowPartial=false) ->
         (args.push(strict); strict = false) if typeof strict is 'number'
         output = {}
 
-        o = arguments[0]
+        o = arguments[ 0 ]
         n = 0
         firstArgumentIsObject = o? and typeof o is 'object'
 
         for k,v of parameters
-          value = if firstArgumentIsObject then o[k] else arguments[n++]
-          output[k] = parseFloat value
+          value = if firstArgumentIsObject then o[ k ] else arguments[ n++ ]
+          output[ k ] = parseFloat value
 
-          if isNaN output[k]
+          if isNaN output[ k ]
             if strict
               keys = (k for k in parameters).join ', '
-              throw new Error "#{output} doesn't match pattern {#{keys}}"
-            if allowPartial then delete output[k] else output[k] = v
+              throw new Error "#{ output } doesn't match pattern {#{ keys }}"
+            if allowPartial then delete output[ k ] else output[ k ] = v
 
         output
 
@@ -1195,7 +1195,7 @@ class mixins.Poolable
 
   # Default `init` implementation, just copy all the options
   # in the instance.
-  init: (options={}) -> @[k] = v for k,v of options
+  init: (options={}) -> @[ k ] = v for k,v of options
 
   #### Poolable::dispose
 
@@ -1227,22 +1227,22 @@ mixins.Sourcable = (name, signature...) ->
         when 'object'
           isArray = Object::toString.call(value).indexOf('Array') isnt -1
           if isArray
-            "[#{value.map (el) -> sourceFor el}]"
+            "[#{ value.map (el) -> sourceFor el }]"
           else
             if value.toSource?
               value.toSource()
             else
               value
         when 'string'
-          "'#{value.replace "'", "\\'"}'"
+          "'#{ value.replace "'", "\\'" }'"
         else value
 
     ##### Sourcable::toSource
     #
     # Return the source code corresponding to the current instance.
     toSource: ->
-      args = (@[arg] for arg in signature).map (o) -> sourceFor o
+      args = (@[ arg ] for arg in signature).map (o) -> sourceFor o
 
-      "new #{name}(#{args.join ','})"
+      "new #{ name }(#{ args.join ',' })"
 
 mixins.Sourcable._name = 'Sourcable'

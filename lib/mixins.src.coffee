@@ -7,7 +7,7 @@ else
 
 mixins = exports
 
-mixins.version = '1.0.0'
+mixins.version = '1.0.1'
 
 mixins.CAMEL_CASE = 'camel'
 mixins.SNAKE_CASE = 'snake'

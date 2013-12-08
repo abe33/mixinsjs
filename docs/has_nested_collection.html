@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>formattable.coffee</title>
+  <title>has_nested_collection.coffee</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -111,7 +111,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>formattable.coffee</h1>
+                  <h1>has_nested_collection.coffee</h1>
               </div>
           </li>
         
@@ -135,27 +135,20 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>A <code>Formattable</code> object provides a <code>toString</code> that return
-a string representation of the current instance.</p>
+              <p>The <code>HasNestedCollection</code> adds a property with named <code>name</code> that
+collects and concatenates all the descendants collections into a
+single array.
+It operates on classes that already includes the <code>HasCollection</code> mixin.</p>
 <pre><code>class Dummy
-  @include mixins.Formattable(&#39;Dummy&#39;, &#39;p1&#39;, &#39;p2&#39;)
+  @concern mixins.HasCollection &#39;children&#39;, &#39;child&#39;
+  @concern mixins.HasNestedCollection &#39;descendants&#39;, through: &#39;children&#39;
 
-  constructor: (@p1, @p2) -&gt;
-    # ...
-
-dummy = new Dummy(10, &#39;foo&#39;)
-dummy.toString()
-# [Dummy(p1=10, p2=foo)]</code></pre>
-<p>You may wonder why the class name is passed in the <code>Formattable</code>
-call, the reason is that javascript minification can alter the
-naming of the functions and in that case, the constructor function
-name can&#39;t be relied on anymore.
-Passing the class name will ensure that the initial class name
-is always accessible through an instance.</p>
+  constructor: -&gt;
+    @children = []</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">Formattable</span> = <span class="params">(classname, properties...)</span> -&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">HasNestedCollection</span> = <span class="params">(name, options={})</span> -&gt;</span></pre></div></div>
             
         </li>
         
@@ -166,10 +159,14 @@ is always accessible through an instance.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              
+              <p>The collection is accessed with the named passed in the <code>through</code>option.</p>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="class"><span class="keyword">class</span> <span class="title">ConcretFormattable</span></span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  through = options.through
+  <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'missing through option'</span>) <span class="keyword">unless</span> through?
+
+  <span class="class"><span class="keyword">class</span> <span class="title">ConcreteHasNestedCollection</span></span></pre></div></div>
             
         </li>
         
@@ -180,18 +177,14 @@ is always accessible through an instance.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <h4 id="formattable-tostring">Formattable::toString</h4>
-<p>Returns the string reprensentation of this instance.</p>
+              <h4 id="hasnestedcollection-name-scope">HasNestedCollection::<name>Scope</h4>
+<p>Creates a property on instances that filters the nested collections
+items using the passed-in <code>block</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> properties.length <span class="keyword">is</span> <span class="number">0</span>
-      <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
-        <span class="string">"[<span class="subst">#{classname}</span>]"</span>
-    <span class="keyword">else</span>
-      <span class="attribute">ConcretFormattable</span>::<span class="function"><span class="title">toString</span> = -&gt;</span>
-        formattedProperties = (<span class="string">"<span class="subst">#{p}</span>=<span class="subst">#{@[p]}</span>"</span> <span class="keyword">for</span> p <span class="keyword">in</span> properties)
-        <span class="string">"[<span class="subst">#{classname}</span>(<span class="subst">#{formattedProperties.join <span class="string">', '</span>}</span>)]"</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>    @[ <span class="string">"<span class="subst">#{ name }</span>Scope"</span> ] = <span class="function"><span class="params">(scopeName, block)</span> -&gt;</span>
+      <span class="property">@getter</span> scopeName,<span class="function"> -&gt;</span> @[ name ].filter block, <span class="keyword">this</span></pre></div></div>
             
         </li>
         
@@ -202,14 +195,20 @@ is always accessible through an instance.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <h4 id="formattable-classname">Formattable::classname</h4>
-<p>Returns the class name of this instance.</p>
+              <h4 id="hascollection-name-">HasCollection::<name></h4>
+<p>Returns a flat array containing all the items contained in all the
+nested collections.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="attribute">classname</span>:<span class="function"> -&gt;</span> classname
+            <div class="content"><div class='highlight'><pre>    <span class="property">@getter</span> name,<span class="function"> -&gt;</span>
+      items = []
+      @[ through ].forEach <span class="function"><span class="params">(item)</span> -&gt;</span>
+        items.push(item)
+        items = items.concat(item[ name ]) <span class="keyword">if</span> item[ name ]?
+      items
 
-mixins.Formattable._name = <span class="string">'Formattable'</span></pre></div></div>
+mixins.HasNestedCollection._name = <span class="string">'HasNestedCollection'</span></pre></div></div>
             
         </li>
         

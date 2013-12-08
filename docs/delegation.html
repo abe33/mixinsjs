@@ -29,6 +29,11 @@
               </a>
             
               
+              <a class="source" href="aliasable.html">
+                aliasable.coffee
+              </a>
+            
+              
               <a class="source" href="alternate_case.html">
                 alternate_case.coffee
               </a>
@@ -61,6 +66,11 @@
               
               <a class="source" href="has_ancestors.html">
                 has_ancestors.coffee
+              </a>
+            
+              
+              <a class="source" href="has_collection.html">
+                has_collection.coffee
               </a>
             
               
@@ -179,7 +189,7 @@ with the same options.</p>
             <div class="content"><div class='highlight'><pre>  <span class="property">@delegate</span>: <span class="function"><span class="params">(properties..., options={})</span> -&gt;</span>
     delegated = options.to
     prefixed = options.prefix
-    _case = options.<span class="reserved">case</span> <span class="keyword">or</span> <span class="string">'camel'</span>
+    _case = options.<span class="reserved">case</span> <span class="keyword">or</span> mixins.CAMEL_CASE
 
     properties.forEach <span class="function"><span class="params">(property)</span> =&gt;</span>
       localAlias = property</pre></div></div>
@@ -199,9 +209,9 @@ with the same options.</p>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> prefixed
         <span class="keyword">switch</span> _case
-          <span class="keyword">when</span> <span class="string">'snake'</span>
+          <span class="keyword">when</span> mixins.SNAKE_CASE
             localAlias = delegated + <span class="string">'_'</span> + property
-          <span class="keyword">when</span> <span class="string">'camel'</span>
+          <span class="keyword">when</span> mixins.CAMEL_CASE
             localAlias = delegated + property.replace <span class="regexp">/^./</span>, <span class="function"><span class="params">(m)</span> -&gt;</span>
               m.toUpperCase()</pre></div></div>
             

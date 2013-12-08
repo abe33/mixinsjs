@@ -912,6 +912,7 @@ mixins.HasAncestors = (options={}) ->
     ##### HasAncestors::selfAndAncestors
     #
     # Returns an object containing the current object followed by its
+    # parent and ancestors.
     @getter 'selfAndAncestors', -> [ this ].concat @ancestors
 
     ##### HasAncestors.ancestorsScope

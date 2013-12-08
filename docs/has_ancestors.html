@@ -29,6 +29,11 @@
               </a>
             
               
+              <a class="source" href="aliasable.html">
+                aliasable.coffee
+              </a>
+            
+              
               <a class="source" href="alternate_case.html">
                 alternate_case.coffee
               </a>
@@ -61,6 +66,11 @@
               
               <a class="source" href="has_ancestors.html">
                 has_ancestors.coffee
+              </a>
+            
+              
+              <a class="source" href="has_collection.html">
+                has_collection.coffee
               </a>
             
               
@@ -111,11 +121,46 @@
               
             </div>
             
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The <code>HasAncestors</code> mixin adds several methods to instance to deal
+with parents and ancestors.</p>
+<pre><code>class Dummy
+  @concern mixins.HasAncestors through: &#39;parentNode&#39;</code></pre>
+<p>The <code>through</code> option allow to specify the property name that access
+to the parent.</p>
+
+            </div>
+            
             <div class="content"><div class='highlight'><pre>mixins.<span class="function"><span class="title">HasAncestors</span> = <span class="params">(options={})</span> -&gt;</span>
   through = options.through <span class="keyword">or</span> <span class="string">'parent'</span>
 
-  <span class="class"><span class="keyword">class</span> <span class="title">ConcreteHasAncestors</span></span>
-    <span class="property">@getter</span> <span class="string">'ancestors'</span>,<span class="function"> -&gt;</span>
+  <span class="class"><span class="keyword">class</span> <span class="title">ConcreteHasAncestors</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h4 id="hasancestors-ancestors">HasAncestors::ancestors</h4>
+<p>Returns an array of all the ancestors of the current object.
+The ancestors are ordered such as the first element is the direct
+parent of the current object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="property">@getter</span> <span class="string">'ancestors'</span>,<span class="function"> -&gt;</span>
       ancestors = []
       parent = @[ through ]
 
@@ -123,11 +168,41 @@
         ancestors.push parent
         parent = parent[ through ]
 
-      ancestors
+      ancestors</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h4 id="hasancestors-selfandancestors">HasAncestors::selfAndAncestors</h4>
+<p>Returns an object containing the current object followed by its
+parent and ancestors.</p>
 
-    <span class="property">@getter</span> <span class="string">'selfAndAncestors'</span>,<span class="function"> -&gt;</span> [ <span class="keyword">this</span> ].concat <span class="property">@ancestors</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="property">@getter</span> <span class="string">'selfAndAncestors'</span>,<span class="function"> -&gt;</span> [ <span class="keyword">this</span> ].concat <span class="property">@ancestors</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h4 id="hasancestors-ancestorsscope">HasAncestors.ancestorsScope</h4>
+<p>Defines a getter property on instances named with <code>name</code> and that
+filter the <code>ancestors</code> array with the given <code>block</code>.</p>
 
-    <span class="property">@ancestorsScope</span>: <span class="function"><span class="params">(name, block)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="property">@ancestorsScope</span>: <span class="function"><span class="params">(name, block)</span> -&gt;</span>
       <span class="property">@getter</span> name,<span class="function"> -&gt;</span> <span class="property">@ancestors</span>.filter(block, <span class="keyword">this</span>)
 
 mixins.HasAncestors._name = <span class="string">'HasAncestors'</span></pre></div></div>

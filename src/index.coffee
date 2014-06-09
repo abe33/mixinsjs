@@ -1,3 +1,4 @@
+# The module bootstrap.
 isCommonJS = typeof module isnt "undefined"
 
 if isCommonJS

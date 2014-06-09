@@ -1,3 +1,3 @@
-unless typeof module is 'undefined'
-  global.mixins = require '../../lib/mixins'
 
+unless typeof module is 'undefined'
+  global.mixins = mixins = require '../../lib/mixins'

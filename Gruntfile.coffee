@@ -39,7 +39,7 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: ['src/**/*.coffee', 'specs/**/*.coffee']
-        tasks: ['coffee', 'uglify', 'test', 'docco']
+        tasks: ['coffee', 'uglify', 'test']
 
     growl:
       spectacular_success:
@@ -50,17 +50,10 @@ module.exports = (grunt) ->
         title: 'Spectacular Tests'
         message: 'Some tests failed'
 
-    docco:
-      debug:
-        src: ['src/**/*.coffee']
-        options:
-          output: 'docs/'
-
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-growl')
-  grunt.loadNpmTasks('grunt-docco')
 
   grunt.registerTask 'test', 'Run npm tests', ->
     done = @async()
@@ -75,4 +68,3 @@ module.exports = (grunt) ->
 
 
   grunt.registerTask('default', ['test'])
-

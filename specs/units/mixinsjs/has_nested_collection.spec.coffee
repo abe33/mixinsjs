@@ -1,5 +1,3 @@
-console.log mixins.HasNestedCollection
-
 describe mixins.HasNestedCollection, ->
   given 'testClass', ->
     class TestClass

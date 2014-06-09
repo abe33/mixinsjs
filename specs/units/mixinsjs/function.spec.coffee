@@ -172,5 +172,3 @@ describe 'a class with a parent', ->
     subject -> @testClass.get()
 
     it -> should equal 'bar, in mixin get, in child get'
-
-

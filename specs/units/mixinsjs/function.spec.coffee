@@ -20,6 +20,19 @@ describe 'a class without parent', ->
       expect(@instance.get()).toEqual('mixin A get, mixin B get, dummy get')
 
 describe 'a class with a parent', ->
+  describe 'with no mixins', ->
+    beforeEach ->
+      class AncestorClass
+        get: -> 'ancestor get'
+
+      class Dummy extends AncestorClass
+        get: -> @super() + ', child get'
+
+      @instance = new Dummy
+
+    it 'calls the ancestor method', ->
+      expect(@instance.get()).toEqual('ancestor get, child get')
+
   describe 'with several mixins', ->
     beforeEach ->
       @ancestorClass = class AncestorClass

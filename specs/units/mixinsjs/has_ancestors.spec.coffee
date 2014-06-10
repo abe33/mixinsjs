@@ -1,29 +1,35 @@
-xdescribe mixins.HasAncestors, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasAncestors', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasAncestors through: 'customParent'
 
       constructor: (@name, @customParent) ->
 
       toString: -> 'instance ' + @name
 
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b', @instanceA
-  given 'instanceC', -> new @testClass 'c', @instanceB
+    @instanceA = new TestClass 'a'
+    @instanceB = new TestClass 'b', @instanceA
+    @instanceC = new TestClass 'c', @instanceB
 
   describe '#ancestors', ->
-    subject -> String(@instanceC.ancestors)
 
-    it -> should equal 'instance b,instance a'
+    it 'returns an array of the object ancestors', ->
+      expect(@instanceC.ancestors).toEqual([
+        @instanceB
+        @instanceA
+      ])
 
   describe '#selfAndAncestors', ->
-    subject -> String(@instanceC.selfAndAncestors)
-
-    it -> should equal 'instance c,instance b,instance a'
+    it 'returns an array of the object and its ancestors', ->
+      expect(@instanceC.selfAndAncestors).toEqual([
+        @instanceC
+        @instanceB
+        @instanceA
+      ])
 
   describe '.ancestorsScope', ->
-    before -> @testClass.ancestorsScope 'isB', (p) -> p.name is 'b'
+    beforeEach ->
+      @testClass.ancestorsScope 'isB', (p) -> p.name is 'b'
 
-    subject -> String(@instanceC.isB)
-
-    it -> should equal 'instance b'
+    it 'should creates a scope filtering the ancestors', ->
+      expect(@instanceC.isB).toEqual([@instanceB])

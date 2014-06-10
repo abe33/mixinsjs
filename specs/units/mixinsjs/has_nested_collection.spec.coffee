@@ -1,29 +1,32 @@
-xdescribe mixins.HasNestedCollection, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasNestedCollection', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasCollection 'children', 'child'
       @concern mixins.HasNestedCollection 'descendants', through: 'children'
 
       constructor: (@name, @children=[]) ->
 
-  given 'instanceRoot', -> new @testClass 'root'
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b'
-  given 'instanceC', -> new @testClass 'c'
+    @instanceRoot =  new @testClass 'root'
+    @instanceA =  new @testClass 'a'
+    @instanceB =  new @testClass 'b'
+    @instanceC =  new @testClass 'c'
 
-  before ->
     @instanceRoot.addChild @instanceA
     @instanceRoot.addChild @instanceB
 
     @instanceA.addChild @instanceC
 
-  subject -> @instanceRoot
+  it 'returns all its descendants in a single array', ->
+    expect(@instanceRoot.descendants).toEqual([
+      @instanceA
+      @instanceC
+      @instanceB
+    ])
 
-  its 'descendants', -> should equal [@instanceA, @instanceC, @instanceB]
-
-  context 'using the descendantsScope method', ->
-    before ->
+  describe 'using the descendantsScope method', ->
+    beforeEach ->
       @testClass.descendantsScope 'descendantsNamedB', (item) ->
         item.name is 'b'
 
-    its 'descendantsNamedB', -> should equal [ @instanceB ]
+    it 'creates a method returning a filtered array of descendants', ->
+      expect(@instanceRoot.descendantsNamedB).toEqual([ @instanceB ])

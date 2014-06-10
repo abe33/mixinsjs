@@ -4,9 +4,8 @@ if typeof module is 'undefined'
 else
   global.mixins = mixins = require '../../lib/mixins'
 
-xdescribe mixins.Aliasable, ->
-
-  given 'testClass', ->
+describe 'mixins.Aliasable', ->
+  beforeEach ->
     class TestClass
       @extend mixins.Aliasable
 
@@ -16,18 +15,17 @@ xdescribe mixins.Aliasable, ->
       @alias 'foo', 'oof', 'ofo'
       @alias 'bar', 'rab', 'bra'
 
-  subject 'instance', -> new @testClass
+    @instance = new TestClass
 
-  its 'oof', -> should equal @instance.foo
-  its 'ofo', -> should equal @instance.foo
+  it 'creates aliases for object properties', ->
+    expect(@instance.oof).toEqual(@instance.foo)
+    expect(@instance.ofo).toEqual(@instance.foo)
+    expect(@instance.rab).toEqual(@instance.bar)
+    expect(@instance.bra).toEqual(@instance.bar)
 
-  its 'rab', -> should equal @instance.bar
-  its 'bra', -> should equal @instance.bar
-
-xdescribe mixins.AlternateCase, ->
-  context 'mixed in a class using camelCase', ->
-
-    given 'testClass', ->
+describe 'mixins.AlternateCase', ->
+  describe 'mixed in a class using camelCase', ->
+    beforeEach ->
       class TestClass
         @extend mixins.AlternateCase
 
@@ -36,14 +34,14 @@ xdescribe mixins.AlternateCase, ->
 
         @snakify()
 
-    subject 'instance', -> new @testClass
+      @instance = new TestClass
 
-    its 'some_property', -> should exist
-    its 'some_method', -> should exist
+    it 'creates properties with snake case', ->
+      expect(@instance.some_property).toBeDefined()
+      expect(@instance.some_method).toBeDefined()
 
-  context 'mixed in a class using snake_case', ->
-
-    given 'testClass', ->
+  describe 'mixed in a class using snake_case', ->
+    beforeEach ->
       class TestClass
         @extend mixins.AlternateCase
 
@@ -52,41 +50,48 @@ xdescribe mixins.AlternateCase, ->
 
         @camelize()
 
-    subject 'instance', -> new @testClass
+      @instance = new TestClass
 
-    its 'some_property', -> should exist
-    its 'someMethod', -> should exist
+    it 'creates properties with camel case', ->
+      expect(@instance.some_property).toBeDefined()
+      expect(@instance.someMethod).toBeDefined()
 
 
-xdescribe mixins.Cloneable, ->
-  context 'when called without arguments', ->
-    given 'testClass', ->
+describe 'mixins.Cloneable', ->
+  describe 'when called without arguments', ->
+    beforeEach ->
       class TestClass
         @include mixins.Cloneable()
 
         constructor: (@self) ->
 
-    given 'instance', -> new @testClass
-    subject -> @instance.clone()
+      @instance = new TestClass
 
-    it -> should exist
-    its 'self', -> should be @instance
+    it 'creates a copy by passing the reference in the copy constructor', ->
+      clone = @instance.clone()
 
-  context 'when called with arguments', ->
-    given 'testClass', ->
+      expect(clone).toBeDefined()
+      expect(clone.self).toBe(@instance)
+
+  describe 'when called with arguments', ->
+    beforeEach ->
       class TestClass
         @include mixins.Cloneable('a', 'b')
 
         constructor: (@a, @b) ->
 
-    given 'instance', -> new @testClass 10, 'foo'
-    subject -> @instance.clone()
+      @instance = new TestClass 10, 'foo'
 
-    it -> should equal @instance
+    it 'creates a copy of the object', ->
+      clone = @instance.clone()
 
-xdescribe mixins.Delegation, ->
-  context 'on a class to delegate properties', ->
-    given 'testClass', ->
+      expect(clone).toBeDefined()
+      expect(clone).toEqual(@instance)
+      expect(clone).not.toBe(@instance)
+
+describe 'mixins.Delegation', ->
+  describe 'included in a class with delegated properties', ->
+    beforeEach ->
       class TestClass
         @extend mixins.Delegation
 
@@ -101,83 +106,89 @@ xdescribe mixins.Delegation, ->
             baz: 'baz'
             func: -> @foo
 
-    given 'instance', -> new @testClass
+      @instance = new TestClass
 
-    context 'accessing a delegated property', ->
+    describe 'when accessing a delegated property', ->
+      it 'returns the composed instance value', ->
+        expect(@instance.foo).toEqual('foo')
+        expect(@instance.bar).toEqual('bar')
 
-      specify -> expect(@instance.foo).to equal 'foo'
-      specify -> expect(@instance.bar).to equal 'bar'
+      describe 'that hold a function', ->
+        describe 'calling the function', ->
+          it 'binds the methods to the delegated object', ->
+            expect(@instance.func()).toEqual('foo')
 
-      context 'that hold a function', ->
-        context 'calling the function', ->
-          specify 'should be bound to the delegated object', ->
-            expect(@instance.func()).to equal 'foo'
+      describe 'with prefix', ->
+        it 'returns the composed instance value', ->
+          expect(@instance.subObjectBaz).toEqual('baz')
 
-      context 'with prefix', ->
-        specify -> expect(@instance.subObjectBaz).to equal 'baz'
+        describe 'and snake case', ->
+          it 'returns the composed instance value', ->
+            expect(@instance.subObject_baz).toEqual('baz')
 
-        context 'and snake case', ->
-          specify -> expect(@instance.subObject_baz).to equal 'baz'
+    describe 'writing on a delegated property', ->
 
-    context 'writing on a delegated property', ->
-
-      before ->
+      beforeEach ->
         @instance.foo = 'oof'
         @instance.bar = 'rab'
 
-      specify -> expect(@instance.foo).to equal 'oof'
-      specify -> expect(@instance.bar).to equal 'rab'
+      it 'writes in the composed instance properties', ->
+        expect(@instance.foo).toEqual('oof')
+        expect(@instance.bar).toEqual('rab')
 
-      context 'with prefix', ->
-        before -> @instance.subObjectBaz = 'zab'
+      describe 'with prefix', ->
+        beforeEach -> @instance.subObjectBaz = 'zab'
 
-        specify -> expect(@instance.subObjectBaz).to equal 'zab'
+        it 'writes in the composed instance properties', ->
+          expect(@instance.subObjectBaz).toEqual('zab')
 
-        context 'and snake case', ->
-          before -> @instance.subObject_baz = 'zab'
+        describe 'and snake case', ->
 
-          specify -> expect(@instance.subObject_baz).to equal 'zab'
+          beforeEach -> @instance.subObject_baz = 'zab'
+
+          it 'writes in the composed instance properties', ->
+            expect(@instance.subObject_baz).toEqual('zab')
 
 
-xdescribe mixins.Equatable, ->
+describe 'mixins.Equatable', ->
   describe 'when called with a list of properties name', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Equatable('a','b')
         constructor: (@a, @b) ->
 
-    given 'instance1', -> new @testClass 1, 2
-    given 'instance2', -> new @testClass 1, 2
-    given 'instance3', -> new @testClass 2, 2
+      @instance1 = new TestClass 1, 2
+      @instance2 = new TestClass 1, 2
+      @instance3 = new TestClass 2, 2
 
-    specify 'instance1.equals instance2', ->
-      @instance1.equals(@instance2).should be true
+    it 'returns true with two similar instancew', ->
+      expect(@instance1.equals(@instance2)).toBeTruthy()
 
-    specify 'instance1.equals instance3', ->
-      @instance1.equals(@instance3).should be false
+    it 'returns false with tow different instances', ->
+      expect(@instance1.equals(@instance3)).toBeFalsy()
 
-xdescribe mixins.Formattable, ->
+describe 'mixins.Formattable', ->
   describe 'when called with extra arguments', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Formattable('TestClass', 'a','b')
 
         constructor: (@a, @b) ->
 
-    given 'instance', -> new @testClass 5, 'foo'
-    subject -> @instance.toString()
+      @instance = new TestClass 5, 'foo'
 
-    the 'toString method return', -> should equal '[TestClass(a=5, b=foo)]'
+    it 'returns a formatted string with extra details', ->
+      expect(@instance.toString()).toEqual('[TestClass(a=5, b=foo)]')
 
   describe 'when called without extra arguments', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Formattable('TestClass')
 
-    given 'instance', -> new @testClass
-    subject -> @instance.toString()
+      @instance = new TestClass
 
-    the 'toString method return', -> should equal '[TestClass]'
+    it 'returns a formatted string without any details', ->
+      expect(@instance.toString()).toEqual('[TestClass]')
 
 
 describe 'a class without parent', ->
@@ -328,155 +339,164 @@ describe 'a class with a parent', ->
     it 'calls the super class method from mixins up to the ancestor class', ->
       expect(@TestClass.get()).toEqual('bar, in mixin A get, in mixin B get, in child get')
 
-xdescribe mixins.Globalizable, ->
-  given 'testClass', ->
+describe 'mixins.Globalizable', ->
+  beforeEach ->
     class TestClass
-      @include mixins.Globalizable spectacular.global
+      @include mixins.Globalizable global ? window
 
       globalizable: [ 'method' ]
 
       property: 'foo'
       method: -> @property
 
-  given 'instance', -> new @testClass
+    @instance = new TestClass
 
-  context 'when globalized', ->
-    before -> @instance.globalize()
-    after -> @instance.unglobalize()
+  describe 'when globalized', ->
+    beforeEach -> @instance.globalize()
+    afterEach -> @instance.unglobalize()
 
-    specify 'the globalized method', ->
-      expect(method()).to equal 'foo'
+    it 'creates methods on the global object', ->
+      expect(method()).toEqual('foo')
 
-    whenPass ->
-      context 'and then unglobalized', ->
+    describe 'and then unglobalized', ->
+      beforeEach -> @instance.unglobalize()
 
-        before -> @instance.unglobalize()
+      it 'removes the methods from the global object', ->
+        expect(typeof method).toEqual('undefined')
 
-        specify 'the unglobalized method', ->
-          expect(typeof method).to equal 'undefined'
-
-xdescribe mixins.HasAncestors, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasAncestors', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasAncestors through: 'customParent'
 
       constructor: (@name, @customParent) ->
 
       toString: -> 'instance ' + @name
 
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b', @instanceA
-  given 'instanceC', -> new @testClass 'c', @instanceB
+    @instanceA = new TestClass 'a'
+    @instanceB = new TestClass 'b', @instanceA
+    @instanceC = new TestClass 'c', @instanceB
 
   describe '#ancestors', ->
-    subject -> String(@instanceC.ancestors)
 
-    it -> should equal 'instance b,instance a'
+    it 'returns an array of the object ancestors', ->
+      expect(@instanceC.ancestors).toEqual([
+        @instanceB
+        @instanceA
+      ])
 
   describe '#selfAndAncestors', ->
-    subject -> String(@instanceC.selfAndAncestors)
-
-    it -> should equal 'instance c,instance b,instance a'
+    it 'returns an array of the object and its ancestors', ->
+      expect(@instanceC.selfAndAncestors).toEqual([
+        @instanceC
+        @instanceB
+        @instanceA
+      ])
 
   describe '.ancestorsScope', ->
-    before -> @testClass.ancestorsScope 'isB', (p) -> p.name is 'b'
+    beforeEach ->
+      @testClass.ancestorsScope 'isB', (p) -> p.name is 'b'
 
-    subject -> String(@instanceC.isB)
+    it 'should creates a scope filtering the ancestors', ->
+      expect(@instanceC.isB).toEqual([@instanceB])
 
-    it -> should equal 'instance b'
-
-xdescribe mixins.HasCollection, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasCollection', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasCollection 'customChildren', 'customChild'
 
       constructor: (@name, @customChildren=[]) ->
 
-  given 'instanceRoot', -> new @testClass 'root'
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b'
+    @instanceRoot = new TestClass 'root'
+    @instanceA = new TestClass 'a'
+    @instanceB = new TestClass 'b'
 
-  before ->
     @instanceRoot.customChildren.push @instanceA
     @instanceRoot.customChildren.push @instanceB
 
-  context 'included in class TestClass', ->
+  describe 'included in class TestClass', ->
 
-    subject -> @instanceRoot
+    it 'provides properties to count children', ->
+      expect(@instanceRoot.customChildrenSize).toEqual(2)
+      expect(@instanceRoot.customChildrenLength).toEqual(2)
+      expect(@instanceRoot.customChildrenCount).toEqual(2)
 
-    its 'customChildrenSize', -> should equal 2
-    its 'customChildrenLength', -> should equal 2
-    its 'customChildrenCount', -> should equal 2
-
-    context 'using the generated customChildrenScope method', ->
-      before ->
+    describe 'using the generated customChildrenScope method', ->
+      beforeEach ->
         @testClass.customChildrenScope 'childrenNamedB', (child) ->
           child.name is 'b'
 
-      its 'childrenNamedB', -> should equal [ @instanceB ]
+      it 'creates a property returning a filtered array of children', ->
+        expect(@instanceRoot.childrenNamedB).toEqual([ @instanceB ])
 
-    context 'adding a child using addCustomChild', ->
-      given 'instanceC', -> new @testClass 'c'
+    describe 'adding a child using addCustomChild', ->
 
-      before -> @instanceRoot.addCustomChild @instanceC
+      beforeEach ->
+        @instanceC = new @testClass 'c'
+        @instanceRoot.addCustomChild @instanceC
 
-      its 'customChildrenSize', -> should equal 3
+      it 'updates the children count', ->
+        expect(@instanceRoot.customChildrenSize).toEqual(3)
 
-      context 'a second time', ->
-        before -> @instanceRoot.addCustomChild @instanceC
+      describe 'a second time', ->
+        beforeEach -> @instanceRoot.addCustomChild @instanceC
 
-        its 'customChildrenSize', -> should equal 3
+        it 'does not add the instance', ->
+          expect(@instanceRoot.customChildrenSize).toEqual(3)
 
-    context 'removing a child with removeCustomChild', ->
-      before -> @instanceRoot.removeCustomChild @instanceB
+    describe 'removing a child with removeCustomChild', ->
+      beforeEach -> @instanceRoot.removeCustomChild @instanceB
 
-      its 'customChildrenSize', -> should equal 1
+      it 'removes the child', ->
+        expect(@instanceRoot.customChildrenSize).toEqual(1)
 
-    context 'finding a child with findCustomChild', ->
-      subject -> @instanceRoot.findCustomChild @instanceB
+    describe 'finding a child with findCustomChild', ->
+      it 'returns the index of the child', ->
+        expect(@instanceRoot.findCustomChild @instanceB).toEqual(1)
 
-      it -> should equal 1
+      describe 'that is not present', ->
+        beforeEach ->
+          @instanceC = new @testClass 'c'
 
-      context 'that is not present', ->
-        given 'instanceC', -> new @testClass 'c'
+        it 'returns -1', ->
+          expect(@instanceRoot.findCustomChild @instanceC).toEqual(-1)
 
-        subject -> @instanceRoot.findCustomChild @instanceC
-
-        it -> should equal -1
-
-xdescribe mixins.HasNestedCollection, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasNestedCollection', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasCollection 'children', 'child'
       @concern mixins.HasNestedCollection 'descendants', through: 'children'
 
       constructor: (@name, @children=[]) ->
 
-  given 'instanceRoot', -> new @testClass 'root'
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b'
-  given 'instanceC', -> new @testClass 'c'
+    @instanceRoot =  new @testClass 'root'
+    @instanceA =  new @testClass 'a'
+    @instanceB =  new @testClass 'b'
+    @instanceC =  new @testClass 'c'
 
-  before ->
     @instanceRoot.addChild @instanceA
     @instanceRoot.addChild @instanceB
 
     @instanceA.addChild @instanceC
 
-  subject -> @instanceRoot
+  it 'returns all its descendants in a single array', ->
+    expect(@instanceRoot.descendants).toEqual([
+      @instanceA
+      @instanceC
+      @instanceB
+    ])
 
-  its 'descendants', -> should equal [@instanceA, @instanceC, @instanceB]
-
-  context 'using the descendantsScope method', ->
-    before ->
+  describe 'using the descendantsScope method', ->
+    beforeEach ->
       @testClass.descendantsScope 'descendantsNamedB', (item) ->
         item.name is 'b'
 
-    its 'descendantsNamedB', -> should equal [ @instanceB ]
+    it 'creates a method returning a filtered array of descendants', ->
+      expect(@instanceRoot.descendantsNamedB).toEqual([ @instanceB ])
 
-xdescribe mixins.Memoizable, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.Memoizable', ->
+  beforeEach ->
+    @testClass = class TestClass
       @include mixins.Memoizable
 
       constructor: (@a=10, @b=20) ->
@@ -490,81 +510,74 @@ xdescribe mixins.Memoizable, ->
 
       memoizationKey: -> "#{@a};#{@b}"
 
-  subject 'instance', -> new @testClass
+    @instance = new @testClass
+    @initial = @instance.getObject()
+    @secondCall = @instance.getObject()
 
-  given 'initial', -> @instance.getObject()
-  given 'secondCall', -> @instance.getObject()
+  it 'stores the result of the first call and return it in the second', ->
+    expect(@secondCall).toBe(@initial)
 
-  specify 'the second object', -> @secondCall.should be @initial
-
-  context 'when changing a property of the objet', ->
-    before ->
-      @initial
-
+  describe 'when changing a property of the objet', ->
+    beforeEach ->
       @instance.a = 20
 
-    given 'secondCall', -> @instance.getObject()
+    it 'clears the memoized value', ->
+      expect(@instance.getObject()).not.toEqual(@initial)
 
-    specify 'the second object', -> @secondCall.shouldnt equal @initial
-
-xdescribe mixins.Poolable, ->
-  given 'testClass', ->
-    class PoolableClass
+describe 'mixins.Poolable', ->
+  beforeEach ->
+    @testClass = class PoolableClass
       @concern mixins.Poolable
 
-  context 'requesting two instances', ->
-    before ->
+  describe 'requesting two instances', ->
+    beforeEach ->
       @instance1 = @testClass.get(x: 10, y: 20)
       @instance2 = @testClass.get(x: 20, y: 10)
 
-    specify 'the used instances count', ->
-      @testClass.usedInstances.length.should equal 2
+    it 'creates two instances and returns them', ->
+      expect(@testClass.usedInstances.length).toEqual(2)
 
-    context 'then disposing an instance', ->
-      before -> @instance2.dispose()
+    describe 'then disposing an instance', ->
+      beforeEach -> @instance2.dispose()
 
-      specify 'the used instances count', ->
-        @testClass.usedInstances.length.should equal 1
+      it 'removes the instance from the used list', ->
+        expect(@testClass.usedInstances.length).toEqual(1)
 
-      specify 'the unused instances count', ->
-        @testClass.unusedInstances.length.should equal 1
+      it 'adds the disposed instance in the unused list', ->
+        expect(@testClass.unusedInstances.length).toEqual(1)
 
-      context 'then requesting another instance', ->
-        before ->
+      describe 'then requesting another instance', ->
+        beforeEach ->
           @instance3 = @testClass.get(x: 200, y: 100)
 
-        specify 'the used instances count', ->
-          @testClass.usedInstances.length.should equal 2
+        it 'reuses a previously created instance', ->
+          expect(@testClass.usedInstances.length).toEqual(2)
+          expect(@testClass.unusedInstances.length).toEqual(0)
+          expect(@instance3).toBe(@instance2)
 
-        specify 'the returned instance', ->
-          @instance3.should be @instance2
-
-        context 'then disposing all the instances', ->
-          before ->
+        describe 'then disposing all the instances', ->
+          beforeEach ->
             @instance1.dispose()
             @instance3.dispose()
 
-          specify 'the used instances count', ->
-            @testClass.usedInstances.length.should equal 0
+          it 'removes all the instances from the used list', ->
+            expect(@testClass.usedInstances.length).toEqual(0)
 
-          specify 'the unused instances count', ->
-            @testClass.unusedInstances.length.should equal 2
+          it 'adds these instances in the unused list', ->
+            expect(@testClass.unusedInstances.length).toEqual(2)
 
 
-xdescribe 'Sourcable', ->
-  given 'testClass1', ->
-    class TestClass1
+describe 'mixins.Sourcable', ->
+  beforeEach ->
+    @testClass1 = class TestClass1
       @include mixins.Sourcable('TestClass1', 'a', 'b')
       constructor: (@a, @b) ->
 
-  given 'testClass2', ->
-    class TestClass2
+    @testClass2 = class TestClass2
       @include mixins.Sourcable('TestClass2', 'a', 'b')
       constructor: (@a, @b) ->
 
-  given 'instance', -> new @testClass2 [10, "o'foo"], new @testClass1 10, 5
+    @instance = new @testClass2 [10, "o'foo"], new @testClass1 10, 5
 
-  subject -> @instance.toSource()
-
-  the 'toSource method return', ->
-    should equal "new TestClass2([10,'o\\'foo'],new TestClass1(10,5))"
+  it 'returns the source of the object', ->
+    expect(@instance.toSource()).toEqual("new TestClass2([10,'o\\'foo'],new TestClass1(10,5))")

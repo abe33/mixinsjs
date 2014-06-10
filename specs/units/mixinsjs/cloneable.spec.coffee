@@ -1,26 +1,32 @@
 
-xdescribe mixins.Cloneable, ->
-  context 'when called without arguments', ->
-    given 'testClass', ->
+describe 'mixins.Cloneable', ->
+  describe 'when called without arguments', ->
+    beforeEach ->
       class TestClass
         @include mixins.Cloneable()
 
         constructor: (@self) ->
 
-    given 'instance', -> new @testClass
-    subject -> @instance.clone()
+      @instance = new TestClass
 
-    it -> should exist
-    its 'self', -> should be @instance
+    it 'creates a copy by passing the reference in the copy constructor', ->
+      clone = @instance.clone()
 
-  context 'when called with arguments', ->
-    given 'testClass', ->
+      expect(clone).toBeDefined()
+      expect(clone.self).toBe(@instance)
+
+  describe 'when called with arguments', ->
+    beforeEach ->
       class TestClass
         @include mixins.Cloneable('a', 'b')
 
         constructor: (@a, @b) ->
 
-    given 'instance', -> new @testClass 10, 'foo'
-    subject -> @instance.clone()
+      @instance = new TestClass 10, 'foo'
 
-    it -> should equal @instance
+    it 'creates a copy of the object', ->
+      clone = @instance.clone()
+
+      expect(clone).toBeDefined()
+      expect(clone).toEqual(@instance)
+      expect(clone).not.toBe(@instance)

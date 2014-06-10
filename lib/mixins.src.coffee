@@ -491,7 +491,7 @@ class mixins.AlternateCase
   @toCamelCase: (str) ->
     a = str.toLowerCase().split(/[_\s-]/)
     s = a.shift()
-    s = "#{ s }#{ utils.capitalize w }" for w in a
+    s = "#{ s }#{w.replace /^./, (s) -> s.toUpperCase()}" for w in a
     s
 
   # Adds the specified alternatives of each properties on the current

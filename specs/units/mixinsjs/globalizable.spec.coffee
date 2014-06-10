@@ -1,26 +1,24 @@
-xdescribe mixins.Globalizable, ->
-  given 'testClass', ->
+describe 'mixins.Globalizable', ->
+  beforeEach ->
     class TestClass
-      @include mixins.Globalizable spectacular.global
+      @include mixins.Globalizable global ? window
 
       globalizable: [ 'method' ]
 
       property: 'foo'
       method: -> @property
 
-  given 'instance', -> new @testClass
+    @instance = new TestClass
 
-  context 'when globalized', ->
-    before -> @instance.globalize()
-    after -> @instance.unglobalize()
+  describe 'when globalized', ->
+    beforeEach -> @instance.globalize()
+    afterEach -> @instance.unglobalize()
 
-    specify 'the globalized method', ->
-      expect(method()).to equal 'foo'
+    it 'creates methods on the global object', ->
+      expect(method()).toEqual('foo')
 
-    whenPass ->
-      context 'and then unglobalized', ->
+    describe 'and then unglobalized', ->
+      beforeEach -> @instance.unglobalize()
 
-        before -> @instance.unglobalize()
-
-        specify 'the unglobalized method', ->
-          expect(typeof method).to equal 'undefined'
+      it 'removes the methods from the global object', ->
+        expect(typeof method).toEqual('undefined')

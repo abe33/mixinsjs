@@ -1,42 +1,41 @@
-xdescribe mixins.Poolable, ->
-  given 'testClass', ->
-    class PoolableClass
+describe 'mixins.Poolable', ->
+  beforeEach ->
+    @testClass = class PoolableClass
       @concern mixins.Poolable
 
-  context 'requesting two instances', ->
-    before ->
+  describe 'requesting two instances', ->
+    beforeEach ->
       @instance1 = @testClass.get(x: 10, y: 20)
       @instance2 = @testClass.get(x: 20, y: 10)
 
-    specify 'the used instances count', ->
-      @testClass.usedInstances.length.should equal 2
+    it 'creates two instances and returns them', ->
+      expect(@testClass.usedInstances.length).toEqual(2)
 
-    context 'then disposing an instance', ->
-      before -> @instance2.dispose()
+    describe 'then disposing an instance', ->
+      beforeEach -> @instance2.dispose()
 
-      specify 'the used instances count', ->
-        @testClass.usedInstances.length.should equal 1
+      it 'removes the instance from the used list', ->
+        expect(@testClass.usedInstances.length).toEqual(1)
 
-      specify 'the unused instances count', ->
-        @testClass.unusedInstances.length.should equal 1
+      it 'adds the disposed instance in the unused list', ->
+        expect(@testClass.unusedInstances.length).toEqual(1)
 
-      context 'then requesting another instance', ->
-        before ->
+      describe 'then requesting another instance', ->
+        beforeEach ->
           @instance3 = @testClass.get(x: 200, y: 100)
 
-        specify 'the used instances count', ->
-          @testClass.usedInstances.length.should equal 2
+        it 'reuses a previously created instance', ->
+          expect(@testClass.usedInstances.length).toEqual(2)
+          expect(@testClass.unusedInstances.length).toEqual(0)
+          expect(@instance3).toBe(@instance2)
 
-        specify 'the returned instance', ->
-          @instance3.should be @instance2
-
-        context 'then disposing all the instances', ->
-          before ->
+        describe 'then disposing all the instances', ->
+          beforeEach ->
             @instance1.dispose()
             @instance3.dispose()
 
-          specify 'the used instances count', ->
-            @testClass.usedInstances.length.should equal 0
+          it 'removes all the instances from the used list', ->
+            expect(@testClass.usedInstances.length).toEqual(0)
 
-          specify 'the unused instances count', ->
-            @testClass.unusedInstances.length.should equal 2
+          it 'adds these instances in the unused list', ->
+            expect(@testClass.unusedInstances.length).toEqual(2)

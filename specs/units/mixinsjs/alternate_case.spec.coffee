@@ -1,7 +1,6 @@
-xdescribe mixins.AlternateCase, ->
-  context 'mixed in a class using camelCase', ->
-
-    given 'testClass', ->
+describe 'mixins.AlternateCase', ->
+  describe 'mixed in a class using camelCase', ->
+    beforeEach ->
       class TestClass
         @extend mixins.AlternateCase
 
@@ -10,14 +9,14 @@ xdescribe mixins.AlternateCase, ->
 
         @snakify()
 
-    subject 'instance', -> new @testClass
+      @instance = new TestClass
 
-    its 'some_property', -> should exist
-    its 'some_method', -> should exist
+    it 'creates properties with snake case', ->
+      expect(@instance.some_property).toBeDefined()
+      expect(@instance.some_method).toBeDefined()
 
-  context 'mixed in a class using snake_case', ->
-
-    given 'testClass', ->
+  describe 'mixed in a class using snake_case', ->
+    beforeEach ->
       class TestClass
         @extend mixins.AlternateCase
 
@@ -26,7 +25,8 @@ xdescribe mixins.AlternateCase, ->
 
         @camelize()
 
-    subject 'instance', -> new @testClass
+      @instance = new TestClass
 
-    its 'some_property', -> should exist
-    its 'someMethod', -> should exist
+    it 'creates properties with camel case', ->
+      expect(@instance.some_property).toBeDefined()
+      expect(@instance.someMethod).toBeDefined()

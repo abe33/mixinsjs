@@ -1,6 +1,5 @@
-xdescribe mixins.Aliasable, ->
-
-  given 'testClass', ->
+describe 'mixins.Aliasable', ->
+  beforeEach ->
     class TestClass
       @extend mixins.Aliasable
 
@@ -10,10 +9,10 @@ xdescribe mixins.Aliasable, ->
       @alias 'foo', 'oof', 'ofo'
       @alias 'bar', 'rab', 'bra'
 
-  subject 'instance', -> new @testClass
+    @instance = new TestClass
 
-  its 'oof', -> should equal @instance.foo
-  its 'ofo', -> should equal @instance.foo
-
-  its 'rab', -> should equal @instance.bar
-  its 'bra', -> should equal @instance.bar
+  it 'creates aliases for object properties', ->
+    expect(@instance.oof).toEqual(@instance.foo)
+    expect(@instance.ofo).toEqual(@instance.foo)
+    expect(@instance.rab).toEqual(@instance.bar)
+    expect(@instance.bra).toEqual(@instance.bar)

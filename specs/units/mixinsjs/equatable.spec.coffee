@@ -1,17 +1,17 @@
 
-xdescribe mixins.Equatable, ->
+describe 'mixins.Equatable', ->
   describe 'when called with a list of properties name', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Equatable('a','b')
         constructor: (@a, @b) ->
 
-    given 'instance1', -> new @testClass 1, 2
-    given 'instance2', -> new @testClass 1, 2
-    given 'instance3', -> new @testClass 2, 2
+      @instance1 = new TestClass 1, 2
+      @instance2 = new TestClass 1, 2
+      @instance3 = new TestClass 2, 2
 
-    specify 'instance1.equals instance2', ->
-      @instance1.equals(@instance2).should be true
+    it 'returns true with two similar instancew', ->
+      expect(@instance1.equals(@instance2)).toBeTruthy()
 
-    specify 'instance1.equals instance3', ->
-      @instance1.equals(@instance3).should be false
+    it 'returns false with tow different instances', ->
+      expect(@instance1.equals(@instance3)).toBeFalsy()

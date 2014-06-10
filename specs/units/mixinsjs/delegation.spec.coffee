@@ -1,6 +1,6 @@
-xdescribe mixins.Delegation, ->
-  context 'on a class to delegate properties', ->
-    given 'testClass', ->
+describe 'mixins.Delegation', ->
+  describe 'included in a class with delegated properties', ->
+    beforeEach ->
       class TestClass
         @extend mixins.Delegation
 
@@ -15,39 +15,45 @@ xdescribe mixins.Delegation, ->
             baz: 'baz'
             func: -> @foo
 
-    given 'instance', -> new @testClass
+      @instance = new TestClass
 
-    context 'accessing a delegated property', ->
+    describe 'when accessing a delegated property', ->
+      it 'returns the composed instance value', ->
+        expect(@instance.foo).toEqual('foo')
+        expect(@instance.bar).toEqual('bar')
 
-      specify -> expect(@instance.foo).to equal 'foo'
-      specify -> expect(@instance.bar).to equal 'bar'
+      describe 'that hold a function', ->
+        describe 'calling the function', ->
+          it 'binds the methods to the delegated object', ->
+            expect(@instance.func()).toEqual('foo')
 
-      context 'that hold a function', ->
-        context 'calling the function', ->
-          specify 'should be bound to the delegated object', ->
-            expect(@instance.func()).to equal 'foo'
+      describe 'with prefix', ->
+        it 'returns the composed instance value', ->
+          expect(@instance.subObjectBaz).toEqual('baz')
 
-      context 'with prefix', ->
-        specify -> expect(@instance.subObjectBaz).to equal 'baz'
+        describe 'and snake case', ->
+          it 'returns the composed instance value', ->
+            expect(@instance.subObject_baz).toEqual('baz')
 
-        context 'and snake case', ->
-          specify -> expect(@instance.subObject_baz).to equal 'baz'
+    describe 'writing on a delegated property', ->
 
-    context 'writing on a delegated property', ->
-
-      before ->
+      beforeEach ->
         @instance.foo = 'oof'
         @instance.bar = 'rab'
 
-      specify -> expect(@instance.foo).to equal 'oof'
-      specify -> expect(@instance.bar).to equal 'rab'
+      it 'writes in the composed instance properties', ->
+        expect(@instance.foo).toEqual('oof')
+        expect(@instance.bar).toEqual('rab')
 
-      context 'with prefix', ->
-        before -> @instance.subObjectBaz = 'zab'
+      describe 'with prefix', ->
+        beforeEach -> @instance.subObjectBaz = 'zab'
 
-        specify -> expect(@instance.subObjectBaz).to equal 'zab'
+        it 'writes in the composed instance properties', ->
+          expect(@instance.subObjectBaz).toEqual('zab')
 
-        context 'and snake case', ->
-          before -> @instance.subObject_baz = 'zab'
+        describe 'and snake case', ->
 
-          specify -> expect(@instance.subObject_baz).to equal 'zab'
+          beforeEach -> @instance.subObject_baz = 'zab'
+
+          it 'writes in the composed instance properties', ->
+            expect(@instance.subObject_baz).toEqual('zab')

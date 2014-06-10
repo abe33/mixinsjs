@@ -1,58 +1,60 @@
-xdescribe mixins.HasCollection, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.HasCollection', ->
+  beforeEach ->
+    @testClass = class TestClass
       @concern mixins.HasCollection 'customChildren', 'customChild'
 
       constructor: (@name, @customChildren=[]) ->
 
-  given 'instanceRoot', -> new @testClass 'root'
-  given 'instanceA', -> new @testClass 'a'
-  given 'instanceB', -> new @testClass 'b'
+    @instanceRoot = new TestClass 'root'
+    @instanceA = new TestClass 'a'
+    @instanceB = new TestClass 'b'
 
-  before ->
     @instanceRoot.customChildren.push @instanceA
     @instanceRoot.customChildren.push @instanceB
 
-  context 'included in class TestClass', ->
+  describe 'included in class TestClass', ->
 
-    subject -> @instanceRoot
+    it 'provides properties to count children', ->
+      expect(@instanceRoot.customChildrenSize).toEqual(2)
+      expect(@instanceRoot.customChildrenLength).toEqual(2)
+      expect(@instanceRoot.customChildrenCount).toEqual(2)
 
-    its 'customChildrenSize', -> should equal 2
-    its 'customChildrenLength', -> should equal 2
-    its 'customChildrenCount', -> should equal 2
-
-    context 'using the generated customChildrenScope method', ->
-      before ->
+    describe 'using the generated customChildrenScope method', ->
+      beforeEach ->
         @testClass.customChildrenScope 'childrenNamedB', (child) ->
           child.name is 'b'
 
-      its 'childrenNamedB', -> should equal [ @instanceB ]
+      it 'creates a property returning a filtered array of children', ->
+        expect(@instanceRoot.childrenNamedB).toEqual([ @instanceB ])
 
-    context 'adding a child using addCustomChild', ->
-      given 'instanceC', -> new @testClass 'c'
+    describe 'adding a child using addCustomChild', ->
 
-      before -> @instanceRoot.addCustomChild @instanceC
+      beforeEach ->
+        @instanceC = new @testClass 'c'
+        @instanceRoot.addCustomChild @instanceC
 
-      its 'customChildrenSize', -> should equal 3
+      it 'updates the children count', ->
+        expect(@instanceRoot.customChildrenSize).toEqual(3)
 
-      context 'a second time', ->
-        before -> @instanceRoot.addCustomChild @instanceC
+      describe 'a second time', ->
+        beforeEach -> @instanceRoot.addCustomChild @instanceC
 
-        its 'customChildrenSize', -> should equal 3
+        it 'does not add the instance', ->
+          expect(@instanceRoot.customChildrenSize).toEqual(3)
 
-    context 'removing a child with removeCustomChild', ->
-      before -> @instanceRoot.removeCustomChild @instanceB
+    describe 'removing a child with removeCustomChild', ->
+      beforeEach -> @instanceRoot.removeCustomChild @instanceB
 
-      its 'customChildrenSize', -> should equal 1
+      it 'removes the child', ->
+        expect(@instanceRoot.customChildrenSize).toEqual(1)
 
-    context 'finding a child with findCustomChild', ->
-      subject -> @instanceRoot.findCustomChild @instanceB
+    describe 'finding a child with findCustomChild', ->
+      it 'returns the index of the child', ->
+        expect(@instanceRoot.findCustomChild @instanceB).toEqual(1)
 
-      it -> should equal 1
+      describe 'that is not present', ->
+        beforeEach ->
+          @instanceC = new @testClass 'c'
 
-      context 'that is not present', ->
-        given 'instanceC', -> new @testClass 'c'
-
-        subject -> @instanceRoot.findCustomChild @instanceC
-
-        it -> should equal -1
+        it 'returns -1', ->
+          expect(@instanceRoot.findCustomChild @instanceC).toEqual(-1)

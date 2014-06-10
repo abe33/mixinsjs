@@ -1,22 +1,22 @@
-xdescribe mixins.Formattable, ->
+describe 'mixins.Formattable', ->
   describe 'when called with extra arguments', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Formattable('TestClass', 'a','b')
 
         constructor: (@a, @b) ->
 
-    given 'instance', -> new @testClass 5, 'foo'
-    subject -> @instance.toString()
+      @instance = new TestClass 5, 'foo'
 
-    the 'toString method return', -> should equal '[TestClass(a=5, b=foo)]'
+    it 'returns a formatted string with extra details', ->
+      expect(@instance.toString()).toEqual('[TestClass(a=5, b=foo)]')
 
   describe 'when called without extra arguments', ->
-    given 'testClass', ->
+    beforeEach ->
       class TestClass
         @include mixins.Formattable('TestClass')
 
-    given 'instance', -> new @testClass
-    subject -> @instance.toString()
+      @instance = new TestClass
 
-    the 'toString method return', -> should equal '[TestClass]'
+    it 'returns a formatted string without any details', ->
+      expect(@instance.toString()).toEqual('[TestClass]')

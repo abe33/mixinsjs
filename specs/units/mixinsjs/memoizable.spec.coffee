@@ -1,6 +1,6 @@
-xdescribe mixins.Memoizable, ->
-  given 'testClass', ->
-    class TestClass
+describe 'mixins.Memoizable', ->
+  beforeEach ->
+    @testClass = class TestClass
       @include mixins.Memoizable
 
       constructor: (@a=10, @b=20) ->
@@ -14,19 +14,16 @@ xdescribe mixins.Memoizable, ->
 
       memoizationKey: -> "#{@a};#{@b}"
 
-  subject 'instance', -> new @testClass
+    @instance = new @testClass
+    @initial = @instance.getObject()
+    @secondCall = @instance.getObject()
 
-  given 'initial', -> @instance.getObject()
-  given 'secondCall', -> @instance.getObject()
+  it 'stores the result of the first call and return it in the second', ->
+    expect(@secondCall).toBe(@initial)
 
-  specify 'the second object', -> @secondCall.should be @initial
-
-  context 'when changing a property of the objet', ->
-    before ->
-      @initial
-
+  describe 'when changing a property of the objet', ->
+    beforeEach ->
       @instance.a = 20
 
-    given 'secondCall', -> @instance.getObject()
-
-    specify 'the second object', -> @secondCall.shouldnt equal @initial
+    it 'clears the memoized value', ->
+      expect(@instance.getObject()).not.toEqual(@initial)

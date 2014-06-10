@@ -37,8 +37,6 @@ module.exports = (grunt) ->
 
     uglify:
       all:
-        options:
-          sourceMap: 'lib/mixins.min.js.map'
         files:
           'lib/mixins.min.js': ['lib/mixins.js']
 
@@ -47,13 +45,18 @@ module.exports = (grunt) ->
         files: ['src/**/*.coffee', 'specs/**/*.coffee']
         tasks: ['coffee', 'uglify', 'test']
 
+      config:
+        files: ['Gruntfile.coffee']
+        options:
+          reload: true
+
     growl:
-      spectacular_success:
-        title: 'Spectacular Tests'
+      jasmine_success:
+        title: 'Jasmine Tests'
         message: 'All test passed'
 
-      spectacular_failure:
-        title: 'Spectacular Tests'
+      jasmine_failure:
+        title: 'Jasmine Tests'
         message: 'Some tests failed'
 
   grunt.loadNpmTasks('grunt-contrib-uglify')
@@ -65,11 +68,11 @@ module.exports = (grunt) ->
     done = @async()
     run('npm test')
     .then ->
-      grunt.task.run 'growl:spectacular_success'
+      grunt.task.run 'growl:jasmine_success'
       done true
     .fail ->
       console.log 'in fail'
-      grunt.task.run 'growl:spectacular_failure'
+      grunt.task.run 'growl:jasmine_failure'
       done false
 
 

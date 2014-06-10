@@ -1,4 +1,4 @@
-describe mixins.Globalizable, ->
+xdescribe mixins.Globalizable, ->
   given 'testClass', ->
     class TestClass
       @include mixins.Globalizable spectacular.global
@@ -24,4 +24,3 @@ describe mixins.Globalizable, ->
 
         specify 'the unglobalized method', ->
           expect(typeof method).to equal 'undefined'
-

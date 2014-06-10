@@ -1,4 +1,4 @@
-describe mixins.HasAncestors, ->
+xdescribe mixins.HasAncestors, ->
   given 'testClass', ->
     class TestClass
       @concern mixins.HasAncestors through: 'customParent'
@@ -27,5 +27,3 @@ describe mixins.HasAncestors, ->
     subject -> String(@instanceC.isB)
 
     it -> should equal 'instance b'
-
-

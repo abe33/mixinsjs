@@ -30,6 +30,11 @@ module.exports = (grunt) ->
             'src/mixinsjs/*.coffee'
           ]
 
+          'lib/mixins.spec.js': [
+            'specs/support/spec_helper.coffee'
+            'specs/units/**/*.coffee'
+          ]
+
     uglify:
       all:
         options:

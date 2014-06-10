@@ -1,4 +1,4 @@
-describe mixins.HasNestedCollection, ->
+xdescribe mixins.HasNestedCollection, ->
   given 'testClass', ->
     class TestClass
       @concern mixins.HasCollection 'children', 'child'

@@ -1,4 +1,4 @@
-describe mixins.Formattable, ->
+xdescribe mixins.Formattable, ->
   describe 'when called with extra arguments', ->
     given 'testClass', ->
       class TestClass
@@ -20,4 +20,3 @@ describe mixins.Formattable, ->
     subject -> @instance.toString()
 
     the 'toString method return', -> should equal '[TestClass]'
-

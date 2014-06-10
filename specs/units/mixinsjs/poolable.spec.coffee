@@ -1,4 +1,4 @@
-describe mixins.Poolable, ->
+xdescribe mixins.Poolable, ->
   given 'testClass', ->
     class PoolableClass
       @concern mixins.Poolable
@@ -40,6 +40,3 @@ describe mixins.Poolable, ->
 
           specify 'the unused instances count', ->
             @testClass.unusedInstances.length.should equal 2
-
-
-

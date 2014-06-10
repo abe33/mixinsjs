@@ -1,4 +1,4 @@
-describe mixins.Delegation, ->
+xdescribe mixins.Delegation, ->
   context 'on a class to delegate properties', ->
     given 'testClass', ->
       class TestClass
@@ -51,4 +51,3 @@ describe mixins.Delegation, ->
           before -> @instance.subObject_baz = 'zab'
 
           specify -> expect(@instance.subObject_baz).to equal 'zab'
-

@@ -1,5 +1,5 @@
 
-describe mixins.Cloneable, ->
+xdescribe mixins.Cloneable, ->
   context 'when called without arguments', ->
     given 'testClass', ->
       class TestClass
@@ -24,4 +24,3 @@ describe mixins.Cloneable, ->
     subject -> @instance.clone()
 
     it -> should equal @instance
-

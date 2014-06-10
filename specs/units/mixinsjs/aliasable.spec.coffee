@@ -1,4 +1,4 @@
-describe mixins.Aliasable, ->
+xdescribe mixins.Aliasable, ->
 
   given 'testClass', ->
     class TestClass

@@ -1,4 +1,4 @@
-describe mixins.HasCollection, ->
+xdescribe mixins.HasCollection, ->
   given 'testClass', ->
     class TestClass
       @concern mixins.HasCollection 'customChildren', 'customChild'
@@ -56,5 +56,3 @@ describe mixins.HasCollection, ->
         subject -> @instanceRoot.findCustomChild @instanceC
 
         it -> should equal -1
-
-

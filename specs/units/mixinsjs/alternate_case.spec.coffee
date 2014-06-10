@@ -1,4 +1,4 @@
-describe mixins.AlternateCase, ->
+xdescribe mixins.AlternateCase, ->
   context 'mixed in a class using camelCase', ->
 
     given 'testClass', ->

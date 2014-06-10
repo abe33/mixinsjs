@@ -1,4 +1,4 @@
-describe mixins.Memoizable, ->
+xdescribe mixins.Memoizable, ->
   given 'testClass', ->
     class TestClass
       @include mixins.Memoizable
@@ -30,4 +30,3 @@ describe mixins.Memoizable, ->
     given 'secondCall', -> @instance.getObject()
 
     specify 'the second object', -> @secondCall.shouldnt equal @initial
-

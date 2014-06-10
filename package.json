@@ -22,7 +22,8 @@
       "opera": [ 12, 15, 16, 17, "next" ],
       "safari": [ 5.1, 6 ],
       "iphone": [ 6 ],
-      "ipad": [ 6 ]
+      "ipad": [ 6 ],
+      "android-browser": [ 4.2 ]
     },
     "html": "specs/TapeRunner.html"
   },

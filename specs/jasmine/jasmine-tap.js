@@ -1,6 +1,7 @@
 (function() {
-    if (! jasmine) {
-        throw new Exception("jasmine library does not exist in global namespace!");
+    var jasmine = jasmineRequire.core(jasmineRequire);
+    if (!jasmine) {
+        throw new Error("jasmine library does not exist in global namespace!");
     }
 
     /**
@@ -22,7 +23,7 @@
 
     TapReporter.prototype = {
 
-        reportRunnerStarting: function(runner) {
+        jasmineStarted: function(o) {
             this.started = true;
             this.start_time = (new Date()).getTime();
             this.executed_specs = 0;
@@ -30,33 +31,32 @@
             this.executed_asserts = 0;
             this.passed_asserts = 0;
             // should have at least 1 spec, otherwise it's considered a failure
-            this.log('1..'+ Math.max(runner.specs().length, 1));
+            this.log('1..'+ o.totalSpecsDefined);
         },
 
-        reportSpecStarting: function(spec) {
-            this.executed_specs++;
+        specStarted: function(spec) {
+          this.executed_specs++;
         },
 
-        reportSpecResults: function(spec) {
+        specDone: function(results) {
             var resultText = "not ok";
             var errorMessage = '';
 
-            var results = spec.results();
-            var passed = results.passed();
+            var passed = results.status == 'passed';
 
-            this.passed_asserts += results.passedCount;
-            this.executed_asserts += results.totalCount;
+            this.passed_asserts += passed ? 1 : 0;
+            this.executed_asserts += 1;
 
             if (passed) {
                 this.passed_specs++;
                 resultText = "ok";
             } else {
-                var items = results.getItems();
+                var items = results.failedExpectations;
                 var i = 0;
                 var expectationResult, stackMessage;
                 while (expectationResult = items[i++]) {
-                    if (expectationResult.trace) {
-                        stackMessage = expectationResult.trace.stack? expectationResult.trace.stack : expectationResult.message;
+                    if (expectationResult) {
+                        stackMessage = expectationResult.stack ? expectationResult.stack : expectationResult.message;
                         errorMessage += '\n  '+ stackMessage;
                     }
                 }
@@ -65,7 +65,7 @@
             this.log(resultText +" "+ (spec.id + 1) +" - "+ spec.suite.description +" : "+ spec.description + errorMessage);
         },
 
-        reportRunnerResults: function(runner) {
+        jasmineDone: function(runner) {
             var dur = (new Date()).getTime() - this.start_time;
             var failed = this.executed_specs - this.passed_specs;
             var spec_str = this.executed_specs + (this.executed_specs === 1 ? " spec, " : " specs, ");
@@ -82,6 +82,7 @@
 
         log: function(str) {
             var console = jasmine.getGlobal().console;
+
             if (console && console.log) {
                 console.log(str);
             }
@@ -89,5 +90,5 @@
     };
 
     // export public
-    jasmine.TapReporter = TapReporter;
+    window.TapReporter = TapReporter;
 })();

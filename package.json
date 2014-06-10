@@ -24,8 +24,7 @@
       "iphone": [ 6 ],
       "ipad": [ 6 ]
     },
-    "browserify": { "transform": "coffee -sc" },
-    "files": "specs/jasmine-harness.coffee"
+    "html": "specs/TapeRunner.html"
   },
   "dependencies": {},
   "main": "./lib/index",

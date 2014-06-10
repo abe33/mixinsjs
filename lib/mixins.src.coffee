@@ -120,7 +120,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
   value.__included__ ||= []
   value.__included__.push klass
 
-  value.__name__ = sup.__name__ = "#{mixin.name}::#{key}"
+  value.__name__ = "#{mixin.name}::#{key}"
 
 ##### Function::include
 #
@@ -384,7 +384,6 @@ unless Object::super?
       caller = arguments.caller or @super.caller
       if caller?
         if caller.__super__?
-          console.log caller.__super__, caller.toString()
           value = caller.__super__[caller.__included__.indexOf this]
 
           if value?
@@ -405,7 +404,10 @@ unless Object::super?
           # If the key is present we'll try to get a descriptor on the
           # `__super__` class property.
           if key?
-            mixin = m for m in reverseMixins when m[key]?
+            for m in reverseMixins
+              if m[key]?
+                mixin = m
+                break
 
             desc = Object.getPropertyDescriptor mixin, key
 

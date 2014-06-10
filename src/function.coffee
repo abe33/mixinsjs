@@ -64,7 +64,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
   value.__included__ ||= []
   value.__included__.push klass
 
-  value.__name__ = sup.__name__ = "#{mixin.name}::#{key}"
+  value.__name__ = "#{mixin.name}::#{key}"
 
 ##### Function::include
 #

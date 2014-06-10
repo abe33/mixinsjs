@@ -187,9 +187,8 @@ describe 'a class with a parent', ->
         @extend mixinB
 
         @get: ->
-          console.log @__mixins__
           @super() + ', in child get'
 
     subject -> @testClass.get()
 
-    it -> should equal 'bar, in mixin B get, in mixin A get, in child get'
+    it -> should equal 'bar, in mixin A get, in mixin B get, in child get'

@@ -24,6 +24,7 @@
       "iphone": [ 6 ],
       "ipad": [ 6 ]
     },
+    "browserify": { "transform": "coffee -sc" },
     "files": "specs/jasmine-harness.coffee"
   },
   "dependencies": {},
@@ -37,7 +38,6 @@
     "grunt-contrib-watch": "0.x",
     "jasmine-node": "2.x",
     "q": "~0.9.7",
-    "grunt-growl": "~0.1.5",
-    "grunt-docco": "~0.3.0"
+    "grunt-growl": "~0.1.5"
   }
 }

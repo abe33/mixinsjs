@@ -26,8 +26,8 @@ module.exports = (grunt) ->
             'src/object.coffee'
             'src/function.coffee'
             'src/inheritance.coffee'
-            'src/mixinsjs/mixin.coffee'
-            'src/mixinsjs/*.coffee'
+            'src/mixins/mixin.coffee'
+            'src/mixins/*.coffee'
           ]
 
           'lib/mixins.spec.js': [

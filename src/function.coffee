@@ -1,3 +1,12 @@
+# Public: Creates a new non-enumerable method on the current class prototype.
+#
+# ```coffeescript
+# class Dummy
+#   @def 'method', ->
+# ```
+#
+# name - The {String} for the method name.
+# block - The {Function} body.
 Function::def = (name, block) ->
   Object.defineProperty @prototype, name, {
     value: block
@@ -10,9 +19,9 @@ Function::def = (name, block) ->
 #
 # ```coffeescript
 # class Dummy
-# @accessor 'foo', {
-# get: -> @fooValue * 2
-# set: (value) -> @fooValue = value / 2
+#   @accessor 'foo', {
+#   get: -> @fooValue * 2
+#   set: (value) -> @fooValue = value / 2
 # }
 #
 # dummy = new Dummy
@@ -20,6 +29,12 @@ Function::def = (name, block) ->
 # dummy.fooValue # 5
 # dummy.foo      # 10
 # ```
+#
+# name - The {string} for the accessor name.
+# options - A descriptor {Object} for the accessor. It can contains
+#           the following properties:
+#           get - A {Function} to read the property's value.
+#           set - A {Function} to write the property's value.
 Function::accessor = (name, options) ->
   oldDescriptor = Object.getPropertyDescriptor @prototype, name
 
@@ -34,27 +49,40 @@ Function::accessor = (name, options) ->
   }
   this
 
-# Public: Creates a getter on the given class prototype
+# Public: Creates a getter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
-# @getter 'foo', -> 'bar'
+#   @getter 'foo', -> 'bar'
 # ```
+#
+# name - The {String} name of the property accessor to create.
+# block - The {Function} to read the property value.
 Function::getter = (name, block) -> @accessor name, get: block
 
-# Creates a setter on the given class prototype
+# Public: Creates a setter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
-# @setter 'foo', (value) -> @fooValue = value / 2
+#   @setter 'foo', (value) -> @fooValue = value / 2
 # ```
+#
+# name - The {String} name of the property accessor to create.
+# block - The {Function} to write the property value.
 Function::setter = (name, block) -> @accessor name, set: block
 
-# This method registers a method as the super method for another
-# method for the given class.
-# The super methods are stored in a map structure where the `__included__`
-# array stores the keys and the `__super__` array stores the values.
-# A meaningful name is added to the function to know its origin.
+# Internal: Registers a method as the super method for another method
+# for the given class. The super methods are stored in a map structure
+# where the `__included__` array stores the keys and the `__super__`
+# array stores the values. A meaningful name is added to the function
+# to know its origin.
+#
+# key - The {String} name of the field that is being manipulated.
+# value - A {Function} that will be set as the new value of the field.
+# klass - The {Function} that is or has its prototype being manipulated.
+# sup - The {Function} that is actually stored in the manipulated field
+#       and that is going to become the super method of the passed-in `value`.
+# mixin - The {Function} mixin that is currently decorating the target class.
 registerSuper = (key, value, klass, sup, mixin) ->
   return if value.__included__? and klass in value.__included__
 
@@ -66,25 +94,39 @@ registerSuper = (key, value, klass, sup, mixin) ->
 
   value.__name__ = "#{mixin.name}::#{key}"
 
-##### Function::include
+# Public: Injects the properties from the mixin in the `mixins` {Array}
+# into the target prototype.
 #
-# The `include` method inject the properties from the mixins
-# prototype into the target prototype.
+#
+# ```coffeescript
+# class Mixin
+#   instanceMethod: -> 'in the instance'
+#
+# class Dummy
+#   @include Mixin
+#
+# dummy = new Dummy
+# dummy.instanceMethod() # 'in the instance'
+# ```
+#
+# ```coffeescript
+# class Dummy
+#   @include MixinA, MixinB, MixinC
+# ```
+#
+# mixins... - A list of {Mixin} to include in the class.
 Function::include = (mixins...) ->
 
   # The mixins prototype constructor and excluded properties
   # are always excluded.
   excluded = ['constructor', 'excluded', 'super']
 
-  # The `__mixins__` class property will stores the mixins included
-  # in the current class.
+  # Internal: Stores the mixins included in the current class.
   @__mixins__ ||= []
 
-  # The `__super__` class property is used in CoffeeScript to store
-  # the parent class prototype when the `extend` keyword is used.
-  #
-  # It'll be used to store the super methods from mixins so we create
-  # one to use as default if we can't find it.
+  # Internal: Stores the parent class prototype when the `extend`
+  # keyword is used. It also stores mixins methods when the class doesn't
+  # extend another class.
   @__super__ ||= {}
 
   # We create a new `__super__` using the previous one as prototype.
@@ -104,13 +146,13 @@ Function::include = (mixins...) ->
     excl = excl.concat mixin::excluded if mixin::excluded?
 
     # We loop through all the enumerable properties of the mixin's
-    # prototype.
+    # prototype that is not marked for exclusion.
     keys = Object.keys mixin.prototype
     for k in keys
       if k not in excl
 
         # We prefer working with property descriptors rather than with
-        # the plain value.
+        # the plain values.
         oldDescriptor = Object.getPropertyDescriptor @prototype, k
         newDescriptor = Object.getPropertyDescriptor mixin.prototype, k
 
@@ -178,8 +220,20 @@ Function::include = (mixins...) ->
 
   this
 
-##### Function::extend
-
+# Public: Extends the current class with the properties of the passed-in
+# `mixins`.
+#
+# ```coffeescript
+# class Mixin
+#   @classMethod: -> 'in the class'
+#
+# class Dummy
+#   @extend Mixin
+#
+# Dummy.classMethod() # 'in the class'
+# ```
+#
+# mixins... - A list of {Mixin} to extend this class.
 Function::extend = (mixins...) ->
   excluded = ['extended', 'excluded', 'included']
 
@@ -239,6 +293,23 @@ Function::extend = (mixins...) ->
 
   this
 
+# Public: Combinates `Function::include` and `Function::extend` into
+# one function.
+#
+# ```coffeescript
+# class Mixin
+#   @classMethod: -> 'in class method'
+#   instanceMethod: -> 'in instance method'
+#
+# class Dummy
+#   @concern Mixin
+#
+# Dummy.classMethod() # 'in class method'
+# dummy = new Dummy
+# dummy.instanceMethod() # 'in instance method'
+# ```
+#
+# mixins... - A list of {Mixin} that concern the class.
 Function::concern = (mixins...) ->
   @include.apply(this, mixins)
   @extend.apply(this, mixins)

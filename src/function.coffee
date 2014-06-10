@@ -1,4 +1,6 @@
-# Public: Creates a new non-enumerable method on the current class prototype.
+### Public ###
+
+# Creates a new non-enumerable method on the current class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -15,14 +17,14 @@ Function::def = (name, block) ->
   }
   this
 
-# Public: Creates a virtual property on the current class's prototype.
+# Creates a virtual property on the current class's prototype.
 #
 # ```coffeescript
 # class Dummy
 #   @accessor 'foo', {
-#   get: -> @fooValue * 2
-#   set: (value) -> @fooValue = value / 2
-# }
+#     get: -> @fooValue * 2
+#     set: (value) -> @fooValue = value / 2
+#   }
 #
 # dummy = new Dummy
 # dummy.foo = 10
@@ -30,7 +32,7 @@ Function::def = (name, block) ->
 # dummy.foo      # 10
 # ```
 #
-# name - The {string} for the accessor name.
+# name - The {String} for the accessor name.
 # options - A descriptor {Object} for the accessor. It can contains
 #           the following properties:
 #           get - A {Function} to read the property's value.
@@ -49,7 +51,7 @@ Function::accessor = (name, options) ->
   }
   this
 
-# Public: Creates a getter on the given class prototype.
+# Creates a getter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -60,7 +62,7 @@ Function::accessor = (name, options) ->
 # block - The {Function} to read the property value.
 Function::getter = (name, block) -> @accessor name, get: block
 
-# Public: Creates a setter on the given class prototype.
+# Creates a setter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -94,7 +96,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
 
   value.__name__ = "#{mixin.name}::#{key}"
 
-# Public: Injects the properties from the mixin in the `mixins` {Array}
+# Injects the properties from the mixin in the `mixins` {Array}
 # into the target prototype.
 #
 #
@@ -114,7 +116,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
 #   @include MixinA, MixinB, MixinC
 # ```
 #
-# mixins... - A list of {Mixin} to include in the class.
+# mixins - A list of `Mixin` to include in the class.
 Function::include = (mixins...) ->
 
   # The mixins prototype constructor and excluded properties
@@ -220,7 +222,7 @@ Function::include = (mixins...) ->
 
   this
 
-# Public: Extends the current class with the properties of the passed-in
+# Extends the current class with the properties of the passed-in
 # `mixins`.
 #
 # ```coffeescript
@@ -233,7 +235,7 @@ Function::include = (mixins...) ->
 # Dummy.classMethod() # 'in the class'
 # ```
 #
-# mixins... - A list of {Mixin} to extend this class.
+# mixins - A list of `Mixin` to extend this class.
 Function::extend = (mixins...) ->
   excluded = ['extended', 'excluded', 'included']
 
@@ -293,7 +295,7 @@ Function::extend = (mixins...) ->
 
   this
 
-# Public: Combinates `Function::include` and `Function::extend` into
+# Combinates `Function::include` and `Function::extend` into
 # one function.
 #
 # ```coffeescript
@@ -309,7 +311,7 @@ Function::extend = (mixins...) ->
 # dummy.instanceMethod() # 'in instance method'
 # ```
 #
-# mixins... - A list of {Mixin} that concern the class.
+# mixins - A list of `Mixin` that concern the class.
 Function::concern = (mixins...) ->
   @include.apply(this, mixins)
   @extend.apply(this, mixins)

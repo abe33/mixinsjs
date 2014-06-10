@@ -43,7 +43,6 @@ mixins.deprecated = (message) ->
 
 mixins.deprecated._name = 'deprecated'
 
-# Some Object extensions
 unless Object.getPropertyDescriptor?
   if Object.getPrototypeOf? and Object.getOwnPropertyDescriptor?
     Object.getPropertyDescriptor = (o, name) ->
@@ -54,7 +53,9 @@ unless Object.getPropertyDescriptor?
   else
     Object.getPropertyDescriptor = -> undefined
 
-# Public: Creates a new non-enumerable method on the current class prototype.
+### Public ###
+
+# Creates a new non-enumerable method on the current class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -71,14 +72,14 @@ Function::def = (name, block) ->
   }
   this
 
-# Public: Creates a virtual property on the current class's prototype.
+# Creates a virtual property on the current class's prototype.
 #
 # ```coffeescript
 # class Dummy
 #   @accessor 'foo', {
-#   get: -> @fooValue * 2
-#   set: (value) -> @fooValue = value / 2
-# }
+#     get: -> @fooValue * 2
+#     set: (value) -> @fooValue = value / 2
+#   }
 #
 # dummy = new Dummy
 # dummy.foo = 10
@@ -86,7 +87,7 @@ Function::def = (name, block) ->
 # dummy.foo      # 10
 # ```
 #
-# name - The {string} for the accessor name.
+# name - The {String} for the accessor name.
 # options - A descriptor {Object} for the accessor. It can contains
 #           the following properties:
 #           get - A {Function} to read the property's value.
@@ -105,7 +106,7 @@ Function::accessor = (name, options) ->
   }
   this
 
-# Public: Creates a getter on the given class prototype.
+# Creates a getter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -116,7 +117,7 @@ Function::accessor = (name, options) ->
 # block - The {Function} to read the property value.
 Function::getter = (name, block) -> @accessor name, get: block
 
-# Public: Creates a setter on the given class prototype.
+# Creates a setter on the given class prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -150,7 +151,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
 
   value.__name__ = "#{mixin.name}::#{key}"
 
-# Public: Injects the properties from the mixin in the `mixins` {Array}
+# Injects the properties from the mixin in the `mixins` {Array}
 # into the target prototype.
 #
 #
@@ -170,7 +171,7 @@ registerSuper = (key, value, klass, sup, mixin) ->
 #   @include MixinA, MixinB, MixinC
 # ```
 #
-# mixins... - A list of {Mixin} to include in the class.
+# mixins - A list of `Mixin` to include in the class.
 Function::include = (mixins...) ->
 
   # The mixins prototype constructor and excluded properties
@@ -276,7 +277,7 @@ Function::include = (mixins...) ->
 
   this
 
-# Public: Extends the current class with the properties of the passed-in
+# Extends the current class with the properties of the passed-in
 # `mixins`.
 #
 # ```coffeescript
@@ -289,7 +290,7 @@ Function::include = (mixins...) ->
 # Dummy.classMethod() # 'in the class'
 # ```
 #
-# mixins... - A list of {Mixin} to extend this class.
+# mixins - A list of `Mixin` to extend this class.
 Function::extend = (mixins...) ->
   excluded = ['extended', 'excluded', 'included']
 
@@ -349,7 +350,7 @@ Function::extend = (mixins...) ->
 
   this
 
-# Public: Combinates `Function::include` and `Function::extend` into
+# Combinates `Function::include` and `Function::extend` into
 # one function.
 #
 # ```coffeescript
@@ -365,13 +366,13 @@ Function::extend = (mixins...) ->
 # dummy.instanceMethod() # 'in instance method'
 # ```
 #
-# mixins... - A list of {Mixin} that concern the class.
+# mixins - A list of `Mixin` that concern the class.
 Function::concern = (mixins...) ->
   @include.apply(this, mixins)
   @extend.apply(this, mixins)
 
 
-# For a given function on an object it will find the property
+# Internal: For a given function on an object it will find the property
 # name and its kind (value/getter/setter).
 findCaller = (caller, proto) ->
   keys = Object.keys proto
@@ -389,6 +390,7 @@ findCaller = (caller, proto) ->
   {}
 
 unless Object::super?
+  # Public: Gives access to the super method of any 
   Object.defineProperty Object.prototype, 'super', {
     enumerable: false
     configurable: true
@@ -448,6 +450,7 @@ unless Object::super?
 
   }
 
+  # Public:
   Object.defineProperty Function.prototype, 'super', {
     enumerable: false
     configurable: true
@@ -502,18 +505,22 @@ unless Object::super?
   }
 
 
-# The `Aliasable` mixin provides the `alias` method in extended classes.
+# Public: Provides class methods to deal with aliased methods and properties.
 #
-#     class Dummy
-#       @extend mixins.Aliasable
+# ```coffeescript
+# class Dummy
+#   @extend mixins.Aliasable
 #
-#       someMethod: ->
-#       @alias 'someMethod', 'someMethodAlias'
+#   someMethod: ->
+#   @alias 'someMethod', 'someMethodAlias'
+# ```
 class mixins.Aliasable
-  ##### Aliasable.alias
-  #
-  # Creates aliases for the given `source` property of tthe current
+
+  # Public: Creates aliases for the given `source` property of tthe current
   # class prototype. Any number of alias can be passed at once.
+  #
+  # source - The {String} name of the aliased property
+  # aliases - A list of {String}s to use as aliases.
   @alias: (source, aliases...) ->
     desc = Object.getPropertyDescriptor @prototype, source
 
@@ -524,7 +531,7 @@ class mixins.Aliasable
         @prototype[ alias ] = @prototype[ source ] for alias in aliases
 
 
-# The `AlternateMixin` mixin add methods to convert the properties
+# Public: The `AlternateMixin` mixin add methods to convert the properties
 # of a class instance to camelCase or snake_case.
 #
 # The methods are available on the class itself and should be called
@@ -532,13 +539,15 @@ class mixins.Aliasable
 #
 # For instance, given the class below:
 #
-#     class Dummy
-#       @extend mixins.AlternateCase
+# ```coffeescript
+# class Dummy
+#   @extend mixins.AlternateCase
 #
-#       someProperty: 'foo'
-#       someMethod: ->
+#   someProperty: 'foo'
+#   someMethod: ->
 #
-#       @snakify()
+#   @snakify()
+# ```
 #
 # An instance will have both `someProperty` and `someMethod` as defined
 # by the class, but also `some_property` and `some_method`.
@@ -548,26 +557,18 @@ class mixins.Aliasable
 # alternative to the class.
 class mixins.AlternateCase
 
-  ##### AlternateCase.toSnakeCase
+  # Public: Converts all the prototype properties to snake_case.
+  @snakify: -> @convert 'toSnakeCase'
 
-  # Converts a string to snake_case.
-  @toSnakeCase: (str) ->
-    str.
-    replace(/([a-z])([A-Z])/g, "$1_$2")
-    .split(/_+/g)
-    .join('_')
-    .toLowerCase()
+  # Public: Converts all the prototype properties to camelCase.
+  @camelize: -> @convert 'toCamelCase'
 
-  # Converts a string to camelCase.
-  @toCamelCase: (str) ->
-    a = str.toLowerCase().split(/[_\s-]/)
-    s = a.shift()
-    s = "#{ s }#{w.replace /^./, (s) -> s.toUpperCase()}" for w in a
-    s
-
-  # Adds the specified alternatives of each properties on the current
-  # prototype. The passed-in argument is the name of the class method
-  # to call to convert the key string.
+  # Public: Adds the specified alternatives of each properties on the
+  # current prototype. The passed-in argument is the name of the class
+  # method to call to convert the key string.
+  #
+  # alternateCase - The {String} name of the class method to use
+  #                 to convert.
   @convert: (alternateCase) ->
     for key,value of @prototype
       alternate = @[alternateCase] key
@@ -579,18 +580,33 @@ class mixins.AlternateCase
       else
         @prototype[alternate] = value
 
-  # Converts all the prototype properties to snake_case.
-  @snakify: -> @convert 'toSnakeCase'
+  # Public: Converts a string to `snake_case`.
+  #
+  # str - The {String} to convert.
+  #
+  # Returns a {String} in `snake_case` .
+  @toSnakeCase: (str) ->
+    str.
+    replace(/([a-z])([A-Z])/g, "$1_$2")
+    .split(/_+/g)
+    .join('_')
+    .toLowerCase()
 
-  # Converts all the prototype properties to camelCase.
-  @camelize: -> @convert 'toCamelCase'
+  # Public: Converts a string to `camelCase`.
+  #
+  # str - The {String} to convert.
+  #
+  # Returns a {String} in `camelCase`.
+  @toCamelCase: (str) ->
+    a = str.toLowerCase().split(/[_\s-]/)
+    s = a.shift()
+    s = "#{ s }#{w.replace /^./, (s) -> s.toUpperCase()}" for w in a
+    s
 
 
-#### Build
-
-# Contains all the function that will instanciate a class with a specific
-# number of arguments. These functions are all generated at runtime with
-# the `Function` constructor.
+# Internal: Contains all the function that will instanciate a class
+# with a specific number of arguments. These functions are all generated
+# at runtime with the `Function` constructor.
 BUILDS = (
   new Function( "return new arguments[0](#{
     ("arguments[1][#{ j-1 }]" for j in [ 0..i ] when j isnt 0).join ","
@@ -601,9 +617,7 @@ build = (klass, args) ->
   f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
-#### Cloneable
-
-# A `Cloneable` object can return a copy of itself through the `clone`
+# Public: A `Cloneable` object can return a copy of itself through the `clone`
 # method.
 #
 # The `Cloneable` function produce a different mixin when called
@@ -635,7 +649,14 @@ build = (klass, args) ->
 #     instance = new Dummy
 #     otherInstance = instance.clone()
 #     # otherInstance = {property: 'foo', otherProperty: 'bar'}
+#
+# properties - A list of {String} of the properties to pass in the constructor.
+#
+# Returns a {ConcreteCloneable} mixin configured with the passed-in arguments.
 mixins.Cloneable = (properties...) ->
+
+  # Public: The concrete cloneable mixin as created by the
+  # [Cloneable](../files/mixinsjs/cloneable.coffee.html) generator.
   class ConcreteCloneable
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this

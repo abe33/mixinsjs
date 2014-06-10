@@ -1,9 +1,7 @@
 
-#### Build
-
-# Contains all the function that will instanciate a class with a specific
-# number of arguments. These functions are all generated at runtime with
-# the `Function` constructor.
+# Internal: Contains all the function that will instanciate a class
+# with a specific number of arguments. These functions are all generated
+# at runtime with the `Function` constructor.
 BUILDS = (
   new Function( "return new arguments[0](#{
     ("arguments[1][#{ j-1 }]" for j in [ 0..i ] when j isnt 0).join ","
@@ -14,9 +12,7 @@ build = (klass, args) ->
   f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
-#### Cloneable
-
-# A `Cloneable` object can return a copy of itself through the `clone`
+# Public: A `Cloneable` object can return a copy of itself through the `clone`
 # method.
 #
 # The `Cloneable` function produce a different mixin when called
@@ -48,7 +44,14 @@ build = (klass, args) ->
 #     instance = new Dummy
 #     otherInstance = instance.clone()
 #     # otherInstance = {property: 'foo', otherProperty: 'bar'}
+#
+# properties - A list of {String} of the properties to pass in the constructor.
+#
+# Returns a {ConcreteCloneable} mixin configured with the passed-in arguments.
 mixins.Cloneable = (properties...) ->
+
+  # Public: The concrete cloneable mixin as created by the
+  # [Cloneable](../files/mixinsjs/cloneable.coffee.html) generator.
   class ConcreteCloneable
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this

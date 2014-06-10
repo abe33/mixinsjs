@@ -1,5 +1,5 @@
 
-# For a given function on an object it will find the property
+# Internal: For a given function on an object it will find the property
 # name and its kind (value/getter/setter).
 findCaller = (caller, proto) ->
   keys = Object.keys proto
@@ -17,6 +17,7 @@ findCaller = (caller, proto) ->
   {}
 
 unless Object::super?
+  # Public: Gives access to the super method of any 
   Object.defineProperty Object.prototype, 'super', {
     enumerable: false
     configurable: true
@@ -76,6 +77,7 @@ unless Object::super?
 
   }
 
+  # Public:
   Object.defineProperty Function.prototype, 'super', {
     enumerable: false
     configurable: true

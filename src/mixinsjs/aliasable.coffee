@@ -1,16 +1,20 @@
 
-# The `Aliasable` mixin provides the `alias` method in extended classes.
+# Public: Provides class methods to deal with aliased methods and properties.
 #
-#     class Dummy
-#       @extend mixins.Aliasable
+# ```coffeescript
+# class Dummy
+#   @extend mixins.Aliasable
 #
-#       someMethod: ->
-#       @alias 'someMethod', 'someMethodAlias'
+#   someMethod: ->
+#   @alias 'someMethod', 'someMethodAlias'
+# ```
 class mixins.Aliasable
-  ##### Aliasable.alias
-  #
-  # Creates aliases for the given `source` property of tthe current
+
+  # Public: Creates aliases for the given `source` property of tthe current
   # class prototype. Any number of alias can be passed at once.
+  #
+  # source - The {String} name of the aliased property
+  # aliases - A list of {String}s to use as aliases.
   @alias: (source, aliases...) ->
     desc = Object.getPropertyDescriptor @prototype, source
 

@@ -1,4 +1,3 @@
-# Some Object extensions
 unless Object.getPropertyDescriptor?
   if Object.getPrototypeOf? and Object.getOwnPropertyDescriptor?
     Object.getPropertyDescriptor = (o, name) ->

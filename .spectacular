@@ -1,7 +1,0 @@
---profile
---coffee
---source-map
---require ./lib/mixins
---require ./specs/support/*.coffee
---source lib/mixins.js
---format progress

@@ -44,6 +44,9 @@ module.exports = (grunt) ->
       scripts:
         files: ['src/**/*.coffee', 'specs/**/*.coffee']
         tasks: ['coffee', 'uglify', 'test']
+        options:
+          livereload: true
+          livereloadOnError: true
 
       config:
         files: ['Gruntfile.coffee']
@@ -74,6 +77,5 @@ module.exports = (grunt) ->
       console.log 'in fail'
       grunt.task.run 'growl:jasmine_failure'
       done false
-
 
   grunt.registerTask('default', ['test'])

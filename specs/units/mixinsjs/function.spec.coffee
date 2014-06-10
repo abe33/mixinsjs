@@ -1,9 +1,34 @@
 
+describe 'a class without parent', ->
+  given 'mixinA', ->
+    class MixinA
+      get: -> 'mixin A get'
+
+  given 'mixinB', ->
+    class MixinB
+      get: -> @super() + ', mixin B get'
+
+  context 'with many mixin included', ->
+    given 'dummyClass', ->
+      mixinA = @mixinA
+      mixinB = @mixinB
+
+      class Dummy
+        @include mixinA
+        @include mixinB
+
+        get: -> @super() + ', dummy get'
+
+    given 'instance', -> new @dummyClass
+
+    subject -> @instance.get()
+
+    it -> should equal 'mixin A get, mixin B get, dummy get'
+
 describe 'a class with a parent', ->
   given 'ancestorClass', ->
     class AncestorClass
       get: -> 'ancestor get'
-
 
   context 'and several mixins', ->
     given 'mixinA', ->
@@ -75,18 +100,6 @@ describe 'a class with a parent', ->
       specify '', ->
         @instance.foo.should throwAnError().inContext(@instance)
 
-  context 'that do not include any mixin', ->
-    given 'childClass', ->
-      ancestor = @ancestorClass
-
-      class ChildClass extends ancestor
-        get: ->
-
-    given 'instance', -> new @childClass
-    subject -> @instance.super
-
-    specify 'the super method', -> shouldnt exist
-
   context 'that have a virtual property', ->
     given 'ancestor', ->
       class AncestorClass
@@ -152,23 +165,31 @@ describe 'a class with a parent', ->
     its 'foo', -> should equal 'bar, in mixin, in child class'
 
   context 'and a mixin with a class method override', ->
-    given 'ancestor', ->
+    given 'ancestorClass', ->
       class AncestorClass
         @get: -> 'bar'
 
-    given 'mixin', ->
-      class Mixin
-        @get: -> @super() + ', in mixin get'
+    given 'mixinA', ->
+      class MixinA
+        @get: -> @super() + ', in mixin A get'
+
+    given 'mixinB', ->
+      class MixinB
+        @get: -> @super() + ', in mixin B get'
 
     given 'testClass', ->
-      ancestor = @ancestor
-      mixin = @mixin
+      ancestor = @ancestorClass
+      mixinA = @mixinA
+      mixinB = @mixinB
 
       class TestClass extends ancestor
-        @extend mixin
+        @extend mixinA
+        @extend mixinB
 
-        @get: -> @super() + ', in child get'
+        @get: ->
+          console.log @__mixins__
+          @super() + ', in child get'
 
     subject -> @testClass.get()
 
-    it -> should equal 'bar, in mixin get, in child get'
+    it -> should equal 'bar, in mixin B get, in mixin A get, in child get'

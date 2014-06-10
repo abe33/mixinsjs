@@ -44,7 +44,6 @@ mixins.deprecated = (message) ->
 mixins.deprecated._name = 'deprecated'
 
 # Some Object extensions
-
 unless Object.getPropertyDescriptor?
   if Object.getPrototypeOf? and Object.getOwnPropertyDescriptor?
     Object.getPropertyDescriptor = (o, name) ->
@@ -55,8 +54,15 @@ unless Object.getPropertyDescriptor?
   else
     Object.getPropertyDescriptor = -> undefined
 
+Function::def = (name, block) ->
+  Object.defineProperty @prototype, name, {
+    value: block
+    configurable: true
+    enumerable: false
+  }
+  this
 
-# Creates a virtual property on the current class's prototype.
+# Public: Creates a virtual property on the current class's prototype.
 #
 # ```coffeescript
 # class Dummy
@@ -84,7 +90,7 @@ Function::accessor = (name, options) ->
   }
   this
 
-# Creates a getter on the given class prototype
+# Public: Creates a getter on the given class prototype
 #
 # ```coffeescript
 # class Dummy
@@ -115,134 +121,6 @@ registerSuper = (key, value, klass, sup, mixin) ->
   value.__included__.push klass
 
   value.__name__ = sup.__name__ = "#{mixin.name}::#{key}"
-
-# For a given function on an object it will find the property
-# name and its kind (value/getter/setter).
-findCaller = (caller, proto) ->
-  keys = Object.keys proto
-
-  for k in keys
-    descriptor = Object.getPropertyDescriptor proto, k
-
-    if descriptor?
-      return {key: k, descriptor, kind: 'value'} if descriptor.value is caller
-      return {key: k, descriptor, kind: 'get'} if descriptor.get is caller
-      return {key: k, descriptor, kind: 'set'} if descriptor.set is caller
-    else
-      return {key: k} if proto[k] is caller
-
-  {}
-
-# Creates the `super` method on the given prototype.
-addPrototypeSuperMethod = (target) ->
-  # When a mixin is included into a class, a `super` method
-  # is created on its prototype. It will allow the instances
-  # and mixins methods to have access to their super methods.
-  unless target.super?
-    target.super = (args...) ->
-
-      # To define which function to use as super when
-      # calling the `this.super` method we need to know which
-      # function is the caller.
-      caller = arguments.caller or @super.caller
-      if caller?
-        # When the caller has a `__super__` property, we face
-        # a mixin method, we can access the `__super__` property
-        # to retrieve its super property.
-        if caller.__super__?
-          value = caller.__super__[caller.__included__.indexOf @constructor]
-
-          # The `this.super` method can be called only if the super
-          # is a function.
-          if value?
-            if typeof value is 'function'
-              value.apply(this, args)
-            else
-              throw new Error "The super for #{caller._name} isn't a function"
-          else
-            throw new Error "No super method for #{caller._name}"
-
-        # Without the `__super__` property we face a method declared
-        # in the including class and that may redefine a method from
-        # a mixin or a parent.
-        else
-          # The name of the property that stores the caller is retrieved.
-          # The `kind` variable is either `'value'`, `'get'`, `'set'`
-          # or `'null'`. It will be needed to find the correspondant
-          # super method in the property descriptor.
-          {key, kind} = findCaller caller, @constructor.prototype
-
-          # If the key is present we'll try to get a descriptor on the
-          # `__super__` class property.
-          if key?
-            desc = Object.getPropertyDescriptor @constructor.__super__, key
-
-            # And if a descriptor is available we get the function
-            # corresponding to the `kind` and call it with the arguments.
-            if desc?
-              value = desc[kind].apply(this, args)
-
-            # Otherwise, the value of the property is simply called.
-            else
-              value = @constructor.__super__[key].apply(this, args)
-
-            return value
-
-          # And in other cases an error is raised.
-          else
-            throw new Error "No super method for #{caller.name || caller._name}"
-      else
-        throw new Error "Super called with a caller"
-
-##### addClassSuperMethod
-
-addClassSuperMethod = (o) ->
-  unless o.super?
-    o.super = (args...) ->
-      caller = arguments.caller or @super.caller
-      if caller?
-        if caller.__super__?
-          value = caller.__super__[caller.__included__.indexOf this]
-
-          if value?
-            if typeof value is 'function'
-              value.apply(this, args)
-            else
-              throw new Error "The super for #{caller._name} isn't a function"
-          else
-            throw new Error "No super method for #{caller._name}"
-
-        else
-          # super method in the property descriptor.
-          {key, kind} = findCaller caller, this
-
-          reverseMixins = []
-          reverseMixins.unshift m for m in @__mixins__
-
-          # If the key is present we'll try to get a descriptor on the
-          # `__super__` class property.
-          if key?
-            mixin = m for m in reverseMixins when m[key]?
-
-            desc = Object.getPropertyDescriptor mixin, key
-
-            # And if a descriptor is available we get the function
-            # corresponding to the `kind` and call it with the arguments.
-            if desc?
-              value = desc[kind].apply(this, args)
-
-            # Otherwise, the value of the property is simply called.
-            else
-              value = mixin[key].apply(this, args)
-
-            return value
-
-          # And in other cases an error is raised.
-          else
-            throw new Error "No super method for #{caller.name || caller._name}"
-      else
-        throw new Error "Super called with a caller"
-
 
 ##### Function::include
 #
@@ -280,9 +158,6 @@ Function::include = (mixins...) ->
     # mixin. It is based on the default exclusion array.
     excl = excluded.concat()
     excl = excl.concat mixin::excluded if mixin::excluded?
-
-    # Adds the `super` method on the prototype.
-    addPrototypeSuperMethod @prototype
 
     # We loop through all the enumerable properties of the mixin's
     # prototype.
@@ -374,8 +249,6 @@ Function::extend = (mixins...) ->
     excl = excluded.concat()
     excl = excl.concat mixin.excluded if mixin.excluded?
 
-    addClassSuperMethod this
-
     keys = Object.keys mixin
     for k in keys
       if k not in excl
@@ -425,6 +298,135 @@ Function::extend = (mixins...) ->
 Function::concern = (mixins...) ->
   @include.apply(this, mixins)
   @extend.apply(this, mixins)
+
+
+# For a given function on an object it will find the property
+# name and its kind (value/getter/setter).
+findCaller = (caller, proto) ->
+  keys = Object.keys proto
+
+  for k in keys
+    descriptor = Object.getPropertyDescriptor proto, k
+
+    if descriptor?
+      return {key: k, descriptor, kind: 'value'} if descriptor.value is caller
+      return {key: k, descriptor, kind: 'get'} if descriptor.get is caller
+      return {key: k, descriptor, kind: 'set'} if descriptor.set is caller
+    else
+      return {key: k} if proto[k] is caller
+
+  {}
+
+unless Object::super?
+  Object.defineProperty Object.prototype, 'super', {
+    enumerable: false
+    configurable: true
+    value: (args...) ->
+      # To define which function to use as super when
+      # calling the `this.super` method we need to know which
+      # function is the caller.
+      caller = arguments.caller ? @super.caller
+      if caller?
+        # When the caller has a `__super__` property, we face
+        # a mixin method, we can access the `__super__` property
+        # to retrieve its super property.
+        if caller.__super__?
+          value = caller.__super__[caller.__included__.indexOf @constructor]
+
+          # The `this.super` method can be called only if the super
+          # is a function.
+          if value?
+            if typeof value is 'function'
+              value.apply(this, args)
+            else
+              throw new Error "The super for #{caller._name} isn't a function"
+          else
+            throw new Error "No super method for #{caller._name}"
+
+        # Without the `__super__` property we face a method declared
+        # in the including class and that may redefine a method from
+        # a mixin or a parent.
+        else
+          # The name of the property that stores the caller is retrieved.
+          # The `kind` variable is either `'value'`, `'get'`, `'set'`
+          # or `'null'`. It will be needed to find the correspondant
+          # super method in the property descriptor.
+          {key, kind} = findCaller caller, @constructor.prototype
+
+          # If the key is present we'll try to get a descriptor on the
+          # `__super__` class property.
+          if key?
+            desc = Object.getPropertyDescriptor @constructor.__super__, key
+
+            # And if a descriptor is available we get the function
+            # corresponding to the `kind` and call it with the arguments.
+            if desc?
+              value = desc[kind].apply(this, args)
+
+            # Otherwise, the value of the property is simply called.
+            else
+              value = @constructor.__super__[key].apply(this, args)
+
+            return value
+
+          # And in other cases an error is raised.
+          else
+            throw new Error "No super method for #{caller.name || caller._name}"
+      else
+        throw new Error "Super called with a caller"
+
+  }
+
+  Object.defineProperty Function.prototype, 'super', {
+    enumerable: false
+    configurable: true
+    value: (args...) ->
+      caller = arguments.caller or @super.caller
+      if caller?
+        if caller.__super__?
+          console.log caller.__super__, caller.toString()
+          value = caller.__super__[caller.__included__.indexOf this]
+
+          if value?
+            if typeof value is 'function'
+              value.apply(this, args)
+            else
+              throw new Error "The super for #{caller._name} isn't a function"
+          else
+            throw new Error "No super method for #{caller._name}"
+
+        else
+          # super method in the property descriptor.
+          {key, kind} = findCaller caller, this
+
+          reverseMixins = []
+          reverseMixins.unshift m for m in @__mixins__
+
+          # If the key is present we'll try to get a descriptor on the
+          # `__super__` class property.
+          if key?
+            mixin = m for m in reverseMixins when m[key]?
+
+            desc = Object.getPropertyDescriptor mixin, key
+
+            # And if a descriptor is available we get the function
+            # corresponding to the `kind` and call it with the arguments.
+            if desc?
+              value = desc[kind].apply(this, args)
+
+            # Otherwise, the value of the property is simply called.
+            else
+              value = mixin[key].apply(this, args)
+
+            return value
+
+          # And in other cases an error is raised.
+          else
+            throw new Error "No super class method for #{caller.name || caller._name}"
+      else
+        throw new Error "super called without a caller"
+
+  }
 
 
 # The `Aliasable` mixin provides the `alias` method in extended classes.

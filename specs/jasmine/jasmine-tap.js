@@ -61,8 +61,7 @@
                     }
                 }
             }
-
-            this.log(resultText +" "+ (spec.id + 1) +" - "+ spec.suite.description +" : "+ spec.description + errorMessage);
+            this.log(resultText +" "+ (parseInt(results.id.replace(/[^\d]+/g, ''))+1) +" - "+ results.fullName + errorMessage);
         },
 
         jasmineDone: function(runner) {

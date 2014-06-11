@@ -24,20 +24,18 @@
 # properties - A list of {String} of the properties to include
 #              in the formatted output.
 #
-# Returns a {ConcretFormattable} mixin.
+# Returns a {ConcreteFormattable} mixin.
 mixins.Formattable = (classname, properties...) ->
   # Public: The concrete class as returned by the
   # [Formattable](../files/mixins/formattable.coffee.html) generator.
-  class ConcretFormattable
+  class ConcreteFormattable
     if properties.length is 0
-      ConcretFormattable::toString = ->
+      ConcreteFormattable::toString = ->
         "[#{ classname }]"
     else
-      ConcretFormattable::toString = ->
+      ConcreteFormattable::toString = ->
         formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
         "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
     # Public: Returns the class name {String} of this instance.
     classname: -> classname
-
-mixins.Formattable._name = 'Formattable'

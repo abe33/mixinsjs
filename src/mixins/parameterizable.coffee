@@ -29,5 +29,3 @@ mixins.Parameterizable = (method, parameters, allowPartial=false) ->
 
       klass[method] = f
       klass::[method] = f
-
-mixins.Parameterizable._name = 'Parameterizable'

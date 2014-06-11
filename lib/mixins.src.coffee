@@ -504,6 +504,37 @@ unless Object::super?
 
   }
 
+# Public: The `Activable` mixin provides the basic interface for an activable
+# widget. You can hook your own activation/deactivation routines by overriding
+# the `activated` and `deactivated` methods.
+#
+# ```coffeescript
+# class Dummy
+#   @include mixins.Activable
+#
+#   activated: ->
+#     # ...
+#
+#   deactivated: ->
+#     # ...
+# ```
+#
+# `Activable` instances are deactivated at creation.
+class mixins.Activable
+  active: false
+
+  # Public: Activates the instance.
+  activate: ->
+    return if @active
+    @active = true
+    @activated?()
+
+  # Public: Deactivates the instance.
+  deactivate: ->
+    return unless @active
+    @active = false
+    @deactivated?()
+
 
 # Public: Provides class methods to deal with aliased methods and properties.
 #
@@ -818,23 +849,21 @@ mixins.Equatable = (properties...) ->
 # properties - A list of {String} of the properties to include
 #              in the formatted output.
 #
-# Returns a {ConcretFormattable} mixin.
+# Returns a {ConcreteFormattable} mixin.
 mixins.Formattable = (classname, properties...) ->
   # Public: The concrete class as returned by the
   # [Formattable](../files/mixins/formattable.coffee.html) generator.
-  class ConcretFormattable
+  class ConcreteFormattable
     if properties.length is 0
-      ConcretFormattable::toString = ->
+      ConcreteFormattable::toString = ->
         "[#{ classname }]"
     else
-      ConcretFormattable::toString = ->
+      ConcreteFormattable::toString = ->
         formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
         "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
     # Public: Returns the class name {String} of this instance.
     classname: -> classname
-
-mixins.Formattable._name = 'Formattable'
 
 
 # Internal: The list of properties that are unglobalizable by default.
@@ -855,7 +884,7 @@ DEFAULT_UNGLOBALIZABLE = [
 # specified global object (`window` in a browser or `global` in nodejs
 # when using methods from the `vm` module).
 #
-# The *globalization* process is reversible and take care to preserve
+# The *globalization* process is **reversible** and take care to preserve
 # the initial properties of the global that may be overriden.
 #
 # The properties exposed on the global object are defined
@@ -885,18 +914,29 @@ DEFAULT_UNGLOBALIZABLE = [
 # The `Globalizable` function takes the target global object as the first
 # argument. The second argument define whether the functions on
 # a globalized object are bound to this object or to the global object.
+#
+# global - The global {Object} onto which adds globalized methods
+#          and properties.
+# keepContext - A {Boolean} defining whether the initial context
+#               of the methods are preserved or not.
+#
+# Returns a {ConcreteGlobalizable} mixin to decorate a class with.
 mixins.Globalizable = (global, keepContext=true) ->
 
-  # Public:
+  # Public: The concrete globalizable mixin as returned by the
+  # [Globalizable](../files/mixins/globalizable.coffee.html) generator.
   class ConcreteGlobalizable
-    
+
+    # Public: An {Array} storing the {String} name of the properties that
+    # can't be globalized. This takes precedence over the `globalizable`
+    # property of the decorated class.
     @unglobalizable: DEFAULT_UNGLOBALIZABLE.concat()
 
+    # Public: {Boolean} that defines whether the methods context
+    # are preserved or not.
     keepContext: keepContext
 
-    #####  Globalizable::globalize
-    #
-    # The method that actually exposes the object methods on global.
+    # Public: The method that actually exposes the object methods on global.
     globalize: ->
       # But only if the object isn't already `globalized`.
       return if @globalized
@@ -916,9 +956,7 @@ mixins.Globalizable = (global, keepContext=true) ->
       # And the object is marked as `globalized`.
       @globalized = true
 
-    ##### Globalizable::unglobalize
-    #
-    # The reverse process of `globalize`.
+    # Public: The reverse process of `globalize`.
     unglobalize: ->
       return unless @globalized
 
@@ -934,9 +972,9 @@ mixins.Globalizable = (global, keepContext=true) ->
       @previousDescriptors = null
       @globalized = false
 
-    ##### Globalizable::globalizeMember
+    # Internal: Exposes a member of the current object on global.
     #
-    # Exposes a member of the current object on global.
+    # key - The {String} name of the property to globalize.
     globalizeMember: (key) ->
       # If possible we prefer using property descriptors rather than
       # accessing directly the properties. It will allow to correctly
@@ -985,9 +1023,9 @@ mixins.Globalizable = (global, keepContext=true) ->
           configurable: true
         }
 
-    ##### Globalizable::unglobalizeMember
+    # Internal: The inverse process of `globalizeMember`.
     #
-    # The inverse process of `globalizeMember`.
+    # key - The {String} name of the property to unglobalize.
     unglobalizeMember: (key) ->
       # If we have a previous descriptor we restore ot on global.
       if @previousDescriptors[ key ]?
@@ -1002,24 +1040,31 @@ mixins.Globalizable = (global, keepContext=true) ->
       else
         global[ key ] = undefined
 
-mixins.Globalizable._name = 'Globalizable'
 
-
-# The `HasAncestors` mixin adds several methods to instance to deal
+# Public: The `HasAncestors` mixin adds several methods to instance to deal
 # with parents and ancestors.
 #
-#     class Dummy
-#       @concern mixins.HasAncestors through: 'parentNode'
+# ```coffee
+# class Dummy
+#   @concern mixins.HasAncestors through: 'parentNode'
+# ```
 #
 # The `through` option allow to specify the property name that access
 # to the parent.
+#
+# options - The option {Object}:
+#           :through - The {String} name of the property giving access
+#           to the instance parent.
+#
+# Returns a {ConcreteHasAncestors} mixin.
 mixins.HasAncestors = (options={}) ->
   through = options.through or 'parent'
 
+  # Public: The concrete mixin as returned by the
+  # [HasAncestors](../files/mixins/has_ancestors.coffee.html) generator.
   class ConcreteHasAncestors
-    ##### HasAncestors::ancestors
-    #
-    # Returns an array of all the ancestors of the current object.
+
+    # Public: Returns an array of all the ancestors of the current object.
     # The ancestors are ordered such as the first element is the direct
     # parent of the current object.
     @getter 'ancestors', ->
@@ -1032,30 +1077,26 @@ mixins.HasAncestors = (options={}) ->
 
       ancestors
 
-    ##### HasAncestors::selfAndAncestors
-    #
-    # Returns an object containing the current object followed by its
+    # Public: Returns an object containing the current object followed by its
     # parent and ancestors.
     @getter 'selfAndAncestors', -> [ this ].concat @ancestors
 
-    ##### HasAncestors.ancestorsScope
-    #
-    # Defines a getter property on instances named with `name` and that
+    # Public: Defines a getter property on instances named with `name` and that
     # filter the `ancestors` array with the given `block`.
     @ancestorsScope: (name, block) ->
       @getter name, -> @ancestors.filter(block, this)
 
-mixins.HasAncestors._name = 'HasAncestors'
 
-
-# The `HasCollection` mixin provides methods to expose a collection
+# Public: The `HasCollection` mixin provides methods to expose a collection
 # in a class. The mixin is created using two strings.
 #
-#     class Dummy
-#       @concern mixins.HasCollection 'children', 'child'
+# ```coffeescript
+# class Dummy
+#   @concern mixins.HasCollection 'children', 'child'
 #
-#       constructor: ->
-#         @children = []
+#   constructor: ->
+#     @children = []
+# ```
 #
 # The `plural` string is used to access the collection in all methods
 # provided by the mixin. The `singular` string will be used to create
@@ -1064,107 +1105,135 @@ mixins.HasAncestors._name = 'HasAncestors'
 # For instance, given that `'children'` and `'child'` was passed as arguments
 # to `HasCollection` the following methods and properties will be created:
 #
-#    - childrenSize [getter]
-#    - childrenCount [getter]
-#    - childrenLength [getter]
-#    - hasChildren [getter]
-#    - addChild
-#    - removeChild
-#    - hasChild
-#    - containsChild
+# - `childrenSize` [getter]
+# - `childrenCount` [getter]
+# - `childrenLength` [getter]
+# - `hasChildren` [getter]
+# - `addChild`
+# - `removeChild`
+# - `hasChild`
+# - `containsChild`
+#
+# plural - The {String} name of the property where the collection can be found.
+# singular - The singularized {String} name.
+#
+# Returns a {ConcreteHasCollection} mixin.
 mixins.HasCollection = (plural, singular) ->
 
   pluralPostfix = plural.replace /^./, (s) -> s.toUpperCase()
   singularPostfix = singular.replace /^./, (s) -> s.toUpperCase()
 
+  # Public: The concrete mixin as returned by the
+  # [HasCollection](../files/mixins/has_collection.coffee.html) generator.
   class ConcreteHasCollection
     # The mixin integrates `Aliasable` to create various alias to the
     # collection methods.
     @extend mixins.Aliasable
 
-    ##### HasCollection.&lt;items&gt;Scope
+    # Public: Creates a `name` scope on instances that filter
+    # the collection using the passed-in `block`.
     #
-    # Creates a `name` property on instances that filter the collection
-    # using the passed-in `block`.
+    # name - The {String} name of the collection scope.
+    # block - The {Function} filter for the scope.
     @[ "#{ plural }Scope" ] = (name, block) ->
       @getter name, -> @[ plural ].filter block, this
 
-    ##### HasCollection::&lt;items&gt;Size
-    #
-    # A property returning the number of elements in the collection.
+    # Public: A property returning the number of elements in the collection.
     @getter "#{ plural }Size", -> @[ plural ].length
 
     # Creates aliases for the collection size property.
     @alias "#{ plural }Size", "#{ plural }Length", "#{ plural }Count"
 
-    ##### HasCollection::has&lt;Item&gt;
+    # Public: Returns `true` if the passed-in `item` is present
+    # in the collection.
     #
-    # Returns `true` if the passed-in `item` is present in the collection.
+    # item - The item {Object} to search in the collection.
+    #
+    # Returns a {Boolean} of whether the item is present
+    # in the collection or not.
     @::[ "has#{ singularPostfix }" ] = (item) -> item in @[ plural ]
 
     # Creates an alias for `has<Item>` named `contains<Item>`.
     @alias "has#{ singularPostfix }", "contains#{ singularPostfix }"
 
-    ##### HasCollection::has&lt;Items&gt;
+    # Public: Returns `true` if the collection has at least one item.
     #
-    # Returns `true` if the collection has at least one item.
+    # Returns a {Boolean} of whether the collection has items or not.
     @getter "has#{ pluralPostfix }", -> @[ plural ].length > 0
 
-    ##### HasCollection::add&lt;Item&gt;
+    # Public: Adds `item` in the collection unless it's already present.
     #
-    # Adds `item` in the collection unless it's already present.
+    # item - The item {Object} to append to the collection.
+    #
+    # Returns the {Number} of items in the collection.
     @::[ "add#{ singularPostfix }" ] = (item) ->
       @[ plural ].push item unless @[ "has#{ singularPostfix }" ] item
+      @[ "#{ plural }Size" ]
 
-    ##### HasCollection::remove&lt;Item&gt;
+    # Public: Removes `item` from the collection.
     #
-    # Removes `item` from the collection.
+    # item - The item {Object} to remove from the collection.
+    #
+    # Returns the {Number} of items in the collection.
     @::[ "remove#{ singularPostfix }" ] = (item) ->
       if @[ "has#{ singularPostfix }" ] item
         @[ plural ].splice @[ "find#{ singularPostfix }" ](item), 1
+      @[ "#{ plural }Size" ]
 
-    ##### HasCollection::find&lt;Item&gt;
+    # Public: Returns the index at which `item` is stored
+    # in the collection. It returns `-1` if `item` can't be found.
     #
-    # Retuns the index at which `item` is stored in the collection.
-    # It returns `-1` if `item` can't be found.
+    # item - The item {Object} to search in the collection.
+    #
+    # Returns the index {Number} of the passed-in item or `-1`.
     @::[ "find#{ singularPostfix }" ] = (item) -> @[ plural ].indexOf item
 
     # Creates an alias for `find<Item>` named `indexOf<Item>`
     @alias "find#{ singularPostfix }", "indexOf#{ singularPostfix }"
 
-mixins.HasCollection._name = 'HasCollection'
 
-
-# The `HasNestedCollection` adds a property with named `name` that
-# collects and concatenates all the descendants collections into a
-# single array.
+# Public: The `HasNestedCollection` adds a property with named `name`
+# that collects and concatenates all the descendants collections
+# into a single array.
 # It operates on classes that already includes the `HasCollection` mixin.
 #
-#     class Dummy
-#       @concern mixins.HasCollection 'children', 'child'
-#       @concern mixins.HasNestedCollection 'descendants', through: 'children'
+# ```coffeescript
+# class Dummy
+#   @concern mixins.HasCollection 'children', 'child'
+#   @concern mixins.HasNestedCollection 'descendants', through: 'children'
 #
-#       constructor: ->
-#         @children = []
+#   constructor: ->
+#     @children = []
+# ```
 #
+# name - The {String} name of the nested collection accessor.
+# options - The options {Object}:
+#           :through - The {String} name of the collection accessor
+#                      to collect on the collection items the nested
+#                      collections.
+#
+# Returns a {ConcreteHasNestedCollection} mixin.
 mixins.HasNestedCollection = (name, options={}) ->
 
   # The collection is accessed with the named passed in the `through`option.
   through = options.through
   throw new Error('missing through option') unless through?
 
+  # Public: The concrete mixin as returned by the
+  # [HasNestedCollection](../files/mixins/has_nested_collection.coffee.html)
+  # generator.
   class ConcreteHasNestedCollection
-    ##### HasNestedCollection::&lt;name&gt;Scope
+
+    # Public: Creates a property on instances that filters the nested
+    # collections items using the passed-in `block`.
     #
-    # Creates a property on instances that filters the nested collections
-    # items using the passed-in `block`.
+    # scopeName - The {String} name for the scope.
+    # block - The {Function} filter of the scope.
     @[ "#{ name }Scope" ] = (scopeName, block) ->
       @getter scopeName, -> @[ name ].filter block, this
 
-    ##### HasCollection::&lt;name&gt;
-    #
-    # Returns a flat array containing all the items contained in all the
-    # nested collections.
+    # Public: Returns a flat array containing all the items contained
+    # in all the nested collections.
     @getter name, ->
       items = []
       @[ through ].forEach (item) ->
@@ -1172,38 +1241,39 @@ mixins.HasNestedCollection = (name, options={}) ->
         items = items.concat(item[ name ]) if item[ name ]?
       items
 
-mixins.HasNestedCollection._name = 'HasNestedCollection'
 
-
-
-# A `Memoizable` object can store data resulting of heavy methods
+# Public: A `Memoizable` object can store data resulting of heavy methods
 # in order to speed up further call to that method.
 #
 # The invalidation of the memoized data is defined using a `memoizationKey`.
 # That key should be generated based on the data that may induce changes
 # in the functions's results.
 #
-#     class Dummy
-#       @include mixins.Memoizable
+# ```coffeescript
+# class Dummy
+#   @include mixins.Memoizable
 #
-#       constructor: (@p1, @p2) ->
-#         # ...
+#   constructor: (@p1, @p2) ->
+#     # ...
 #
-#       heavyMethod: (arg) ->
-#         key = "heavyMethod-#{arg}"
-#         return @memoFor key if @memoized key
+#   heavyMethod: (arg) ->
+#     key = "heavyMethod-#{arg}"
+#     return @memoFor key if @memoized key
 #
-#         # do costly computation
-#         @memoize key, result
+#     # do costly computation
+#     @memoize key, result
 #
-#       memoizationKey: -> "#{p1};#{p2}"
+#   memoizationKey: -> "#{p1};#{p2}"
+# ```
 class mixins.Memoizable
-  ##### Memoizable::memoized
-  #
-  # Returns `true` if data are available for the given `prop`.
+  # Public: Returns `true` if data are available for the given `prop`.
   #
   # When the current state of the object don't match the stored
   # memoization key, the whole data stored in the memo are cleared.
+  #
+  # prop - The {String} name of a property.
+  #
+  # Retuns a {Boolean} of whether the value of the propery is memoized or not.
   memoized: (prop) ->
     if @memoizationKey() is @__memoizationKey__
       @__memo__?[ prop ]?
@@ -1211,14 +1281,14 @@ class mixins.Memoizable
       @__memo__ = {}
       false
 
-  ##### Memoizable::memoFor
+  # Public: Returns the memoized data for the given `prop`.
   #
-  # Returns the memoized data for the given `prop`.
+  # prop - The {String} name of a property.
+  #
+  # Returns the memoized data for the given prop
   memoFor: (prop) -> @__memo__[ prop ]
 
-  ##### Memoizable::memoize
-  #
-  # Register a memo in the current object for the given `prop`.
+  # Public: Register a memo in the current object for the given `prop`.
   # The memoization key is updated with the current state of the
   # object.
   memoize: (prop, value) ->
@@ -1226,13 +1296,14 @@ class mixins.Memoizable
     @__memoizationKey__ = @memoizationKey()
     @__memo__[ prop ] = value
 
-  ##### Memoizable::memoizationKey
+  # Public: Abstract: Generates the memoization key for this instance's state.
   #
-  # **Virtual Method**
+  # By default the memoization key of an object is the return of its `toString`
+  # method. **You SHOULD redefine the memoization key generation in the class
+  # including the `Memoizable` mixin.**
   #
-  # Generates the memoization key for this instance's state.
+  # Returns a {String} that identify the state of the current instance.
   memoizationKey: -> @toString()
-
 
 
 #
@@ -1266,23 +1337,25 @@ mixins.Parameterizable = (method, parameters, allowPartial=false) ->
       klass[method] = f
       klass::[method] = f
 
-mixins.Parameterizable._name = 'Parameterizable'
 
-
-#
+# Public: A `Poolable` class has the ability to manage a pool of instances
+# and prevent the further creation of instances as long as unused ones
+# are still present.
 class mixins.Poolable
 
-  #### Poolable.extended
-
-  # The two objects stores are created in the extended hook to avoid
+  # Internal: The two objects stores are created in the extended hook to avoid
   # that all the class extending `Poolable` shares the same instances.
   @extended: (klass) ->
     klass.usedInstances = []
     klass.unusedInstances = []
 
-  #### Poolable.get
-
-  # The `get` method returns an instance of the class.
+  # Public: The `get` method returns an instance of the class.
+  # If the class defines an `init` method, it will be called with the
+  # passed-in `options` {Object}.
+  #
+  # options - The option {Object} to use to setup the created instance.
+  #
+  # Returns an instance of the current class.
   @get: (options={}) ->
     # Either retrieve or create the instance.
     if @unusedInstances.length > 0
@@ -1297,10 +1370,10 @@ class mixins.Poolable
     instance.init(options)
     instance
 
-  #### Poolable.release
-
-  # The `release` method takes an instance and move it from the
-  # the used pool to the unused pool.
+  # Public: The `release` method takes an instance and move
+  # it from the the used pool to the unused pool.
+  #
+  # instance - The instance of the current class.
   @release: (instance) ->
     # We can't release unused instances created using
     # the `new` operator without using `get`.
@@ -1314,37 +1387,40 @@ class mixins.Poolable
     # And then moved to the unused instances one.
     @unusedInstances.push instance
 
-  #### Poolable::init
-
-  # Default `init` implementation, just copy all the options
+  # Public: Default `init` implementation, just copy all the options
   # in the instance.
+  #
+  # options - The setup {Object} for this instance.
   init: (options={}) -> @[ k ] = v for k,v of options
 
-  #### Poolable::dispose
-
-  # Default `dispose` implementation, call the `release` method
+  # Public: Default `dispose` implementation, call the `release` method
   # on the instance constructor. A proper implementation should
   # take care of removing/cleaning all the instance properties.
   dispose: -> @constructor.release(this)
 
 
-# A `Sourcable` object is an object that can return the source code
+# Public: A `Sourcable` object is an object that can return the source code
 # to re-create it by code.
 #
-#     class Dummy
-#       @include mixins.Sourcable('geomjs.Dummy', 'p1', 'p2')
+# ```coffeescript
+# class Dummy
+#   @include mixins.Sourcable('geomjs.Dummy', 'p1', 'p2')
 #
-#       constructor: (@p1, @p2) ->
+#   constructor: (@p1, @p2) ->
 #
-#     dummy = new Dummy(10,'foo')
-#     dummy.toSource() # "new geomjs.Dummy(10,'foo')"
+# dummy = new Dummy(10,'foo')
+# dummy.toSource() # "new geomjs.Dummy(10,'foo')"
+# ```
+#
+# name - The {String} path to the current class.
+# signature - A list of {String} name of properties
 mixins.Sourcable = (name, signature...) ->
 
-  # A concrete class is generated and returned by `Sourcable`.
-  # This class extends `Mixin` and can be attached as any other
-  # mixin with the `attachTo` method.
+  # Public: A concrete class is generated and returned by
+  # [Sourcable](../files/mixins/sourcable.coffee.html).
   class ConcreteSourcable
-    #
+
+    # Internal: Generates the source for a property's value.
     sourceFor = (value) ->
       switch typeof value
         when 'object'
@@ -1360,9 +1436,9 @@ mixins.Sourcable = (name, signature...) ->
           "'#{ value.replace "'", "\\'" }'"
         else value
 
-    ##### Sourcable::toSource
+    # Public: Returns the source code corresponding to the current instance.
     #
-    # Return the source code corresponding to the current instance.
+    # Returns a {String} with the source of the instance.
     toSource: ->
       args = (@[ arg ] for arg in signature).map (o) -> sourceFor o
 

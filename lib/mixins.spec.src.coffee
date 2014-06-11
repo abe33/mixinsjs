@@ -29,14 +29,26 @@ describe 'mixins.Activable', ->
       it 'calls the activated hook', ->
         expect(@instance.activated).toHaveBeenCalled()
 
+      describe 'activated a second time', ->
+        beforeEach -> @instance.activate()
+
+        it 'does not calls twice the activated hook', ->
+          expect(@instance.activated.calls.count()).toEqual(1)
+
       describe 'then deactivated', ->
         beforeEach -> @instance.deactivate()
-        
+
         it 'deactivates the instance', ->
           expect(@instance.active).toBeFalsy()
 
         it 'calls the deactivated hook', ->
           expect(@instance.deactivated).toHaveBeenCalled()
+
+        describe 'deactivated a second time', ->
+          beforeEach -> @instance.deactivate()
+
+          it 'does not calls twice the deactivated hook', ->
+            expect(@instance.deactivated.calls.count()).toEqual(1)
 
 describe 'mixins.Aliasable', ->
   beforeEach ->

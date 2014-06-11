@@ -1,23 +1,23 @@
 
-# The `Delegation` mixin allow to define properties on an object that
-# proxy another property of an object stored in one of its property
+# Public: The `Delegation` mixin allow to define properties on an object that
+# proxy another property of an object stored in one of its property.
 #
-#     class Dummy
-#       @extend Delegation
+# ```coffeescript
+# class Dummy
+#   @extend Delegation
 #
-#       @delegate 'someProperty', to: 'someObject'
+#   @delegate 'someProperty', to: 'someObject'
 #
-#       constructor: ->
-#         @someObject = someProperty: 'some value'
+#   constructor: ->
+#     @someObject = someProperty: 'some value'
 #
-#     instance = new Dummy
-#     instance.someProperty
-#     # 'some value'
+# instance = new Dummy
+# instance.someProperty
+# # 'some value'
+# ```
 class mixins.Delegation
 
-  ##### Delegation.delegate
-
-  # The `delegate` class method generates a property on the current
+  # Public: The `delegate` class method generates a property on the current
   # prototype that proxy the property of the given object.
   #
   # The `to` option specify the property of the object accessed by
@@ -26,29 +26,43 @@ class mixins.Delegation
   # The delegated property name can be prefixed with the name of the
   # accessed property
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'someProperty', to: 'someObject', prefix: true
-  #       # delegated property is named `someObjectSomeProperty`
+  #   @delegate 'someProperty', to: 'someObject', prefix: true
+  #   # delegated property is named `someObjectSomeProperty`
+  # ```
   #
   # By default, using a prefix generates a camelCase property name.
   # You can use the `case` option to change that to a snake_case property
   # name.
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'some_property', to: 'some_object', prefix: true
-  #       # delegated property is named `some_object_some_property`
+  #   @delegate 'some_property', to: 'some_object', prefix: true
+  #   # delegated property is named `some_object_some_property`
+  # ```
   #
   # The `delegate` method accept any number of properties to delegate
   # with the same options.
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'someProperty', 'someOtherProperty', to: 'someObject'
+  #   @delegate 'someProperty', 'someOtherProperty', to: 'someObject'
+  # ```
+  #
+  # properties - A list of {String} of the properties to delegate.
+  # options - The delegation options {Object}:
+  #           :to - The {String} name of the target property.
+  #           :prefix - A {Boolean} indicating whether to prefix the created
+  #                     delegated property name with the target property name.
+  #           :case - An optional {String} to define the case to use to generate
+  #                   a prefixed delegated property.
   @delegate: (properties..., options={}) ->
     delegated = options.to
     prefixed = options.prefix

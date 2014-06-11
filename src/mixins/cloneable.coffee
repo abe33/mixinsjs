@@ -12,10 +12,10 @@ build = (klass, args) ->
   f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
-# Public: A `Cloneable` object can return a copy of itself through the `clone`
+# Public: A `Cloneable` object can return a copy of itself through its `clone`
 # method.
 #
-# The `Cloneable` function produce a different mixin when called
+# The `Cloneable` generator function produces a different mixin when called
 # with or without arguments.
 #
 # When called without argument, the returned mixin creates a clone using
@@ -51,11 +51,9 @@ build = (klass, args) ->
 mixins.Cloneable = (properties...) ->
 
   # Public: The concrete cloneable mixin as created by the
-  # [Cloneable](../files/mixinsjs/cloneable.coffee.html) generator.
+  # [Cloneable](../files/mixins/cloneable.coffee.html) generator.
   class ConcreteCloneable
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this
     else
       @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[ p ]
-
-mixins.Cloneable._name = 'Cloneable'

@@ -617,10 +617,10 @@ build = (klass, args) ->
   f = BUILDS[ if args? then args.length else 0 ]
   f klass, args
 
-# Public: A `Cloneable` object can return a copy of itself through the `clone`
+# Public: A `Cloneable` object can return a copy of itself through its `clone`
 # method.
 #
-# The `Cloneable` function produce a different mixin when called
+# The `Cloneable` generator function produces a different mixin when called
 # with or without arguments.
 #
 # When called without argument, the returned mixin creates a clone using
@@ -656,35 +656,33 @@ build = (klass, args) ->
 mixins.Cloneable = (properties...) ->
 
   # Public: The concrete cloneable mixin as created by the
-  # [Cloneable](../files/mixinsjs/cloneable.coffee.html) generator.
+  # [Cloneable](../files/mixins/cloneable.coffee.html) generator.
   class ConcreteCloneable
     if properties.length is 0
       @included: (klass) -> klass::clone = -> new klass this
     else
       @included: (klass) -> klass::clone = -> build klass, properties.map (p) => @[ p ]
 
-mixins.Cloneable._name = 'Cloneable'
 
-
-# The `Delegation` mixin allow to define properties on an object that
-# proxy another property of an object stored in one of its property
+# Public: The `Delegation` mixin allow to define properties on an object that
+# proxy another property of an object stored in one of its property.
 #
-#     class Dummy
-#       @extend Delegation
+# ```coffeescript
+# class Dummy
+#   @extend Delegation
 #
-#       @delegate 'someProperty', to: 'someObject'
+#   @delegate 'someProperty', to: 'someObject'
 #
-#       constructor: ->
-#         @someObject = someProperty: 'some value'
+#   constructor: ->
+#     @someObject = someProperty: 'some value'
 #
-#     instance = new Dummy
-#     instance.someProperty
-#     # 'some value'
+# instance = new Dummy
+# instance.someProperty
+# # 'some value'
+# ```
 class mixins.Delegation
 
-  ##### Delegation.delegate
-
-  # The `delegate` class method generates a property on the current
+  # Public: The `delegate` class method generates a property on the current
   # prototype that proxy the property of the given object.
   #
   # The `to` option specify the property of the object accessed by
@@ -693,29 +691,43 @@ class mixins.Delegation
   # The delegated property name can be prefixed with the name of the
   # accessed property
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'someProperty', to: 'someObject', prefix: true
-  #       # delegated property is named `someObjectSomeProperty`
+  #   @delegate 'someProperty', to: 'someObject', prefix: true
+  #   # delegated property is named `someObjectSomeProperty`
+  # ```
   #
   # By default, using a prefix generates a camelCase property name.
   # You can use the `case` option to change that to a snake_case property
   # name.
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'some_property', to: 'some_object', prefix: true
-  #       # delegated property is named `some_object_some_property`
+  #   @delegate 'some_property', to: 'some_object', prefix: true
+  #   # delegated property is named `some_object_some_property`
+  # ```
   #
   # The `delegate` method accept any number of properties to delegate
   # with the same options.
   #
-  #     class Dummy
-  #       @extend Delegation
+  # ```coffeescript
+  # class Dummy
+  #   @extend Delegation
   #
-  #       @delegate 'someProperty', 'someOtherProperty', to: 'someObject'
+  #   @delegate 'someProperty', 'someOtherProperty', to: 'someObject'
+  # ```
+  #
+  # properties - A list of {String} of the properties to delegate.
+  # options - The delegation options {Object}:
+  #           :to - The {String} name of the target property.
+  #           :prefix - A {Boolean} indicating whether to prefix the created
+  #                     delegated property name with the target property name.
+  #           :case - An optional {String} to define the case to use to generate
+  #                   a prefixed delegated property.
   @delegate: (properties..., options={}) ->
     delegated = options.to
     prefixed = options.prefix
@@ -743,40 +755,45 @@ class mixins.Delegation
       }
 
 
-# An `Equatable` object can be compared in equality with another object.
+# Public: An `Equatable` object can be compared in equality with another object.
 # Objects are considered as equal if all the listed properties are equal.
 #
-#     class Dummy
-#       @include mixins.Equatable('p1', 'p2')
+# ```coffeescript
+# class Dummy
+#   @include mixins.Equatable('p1', 'p2')
 #
-#       constructor: (@p1, @p2) ->
-#         # ...
+#   constructor: (@p1, @p2) ->
+#     # ...
 #
-#     dummy = new Dummy(10, 'foo')
-#     dummy.equals p1: 10, p2: 'foo'   # true
-#     dummy.equals new Dummy(5, 'bar') # false
+# dummy = new Dummy(10, 'foo')
+# dummy.equals p1: 10, p2: 'foo'   # true
+# dummy.equals new Dummy(5, 'bar') # false
+# ```
 #
 # The `Equatable` mixin is called a parameterized mixin as
 # it's in fact a function that will generate a mixin based
 # on its arguments.
+#
+# properties - A list of {String} of the properties to compare to set equality.
+#
+# Returns a {ConcreteEquatable} mixin.
 mixins.Equatable = (properties...) ->
 
-  # A concrete class is generated and returned by `Equatable`.
-  # This class extends `Mixin` and can be attached as any other
-  # mixin with the `attachTo` method.
+  # Public: A concrete mixin is generated and returned by the
+  # [Equatable](../files/mixins/equatable.coffee.html) generator.
   class ConcreteEquatable
 
-    ##### Equatable::equals
-    #
-    # Compares the `properties` of the passed-in object with the current
+    # Public: Compares the `properties` of the passed-in object with the current
     # object and return `true` if all the values are equal.
+    #
+    # o - The {Object} to compare to this instance.
+    #
+    # Returns a {Boolean} of whether the objects are equal or not.
     equals: (o) -> o? and properties.every (p) =>
       if @[ p ].equals? then @[ p ].equals o[ p ] else o[p] is @[ p ]
 
-mixins.Equatable._name = 'Equatable'
 
-
-# A `Formattable` object provides a `toString` that return
+# Public: A `Formattable` object provides a `toString` that return
 # a string representation of the current instance.
 #
 #     class Dummy
@@ -796,11 +813,8 @@ mixins.Equatable._name = 'Equatable'
 # Passing the class name will ensure that the initial class name
 # is always accessible through an instance.
 mixins.Formattable = (classname, properties...) ->
-  #
+  # Public:
   class ConcretFormattable
-    ##### Formattable::toString
-    #
-    # Returns the string reprensentation of this instance.
     if properties.length is 0
       ConcretFormattable::toString = ->
         "[#{ classname }]"
@@ -809,9 +823,7 @@ mixins.Formattable = (classname, properties...) ->
         formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
         "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
-    ##### Formattable::classname
-    #
-    # Returns the class name of this instance.
+    # Public: Returns the class name {String} of this instance.
     classname: -> classname
 
 mixins.Formattable._name = 'Formattable'

@@ -1,5 +1,5 @@
 
-# A `Formattable` object provides a `toString` that return
+# Public: A `Formattable` object provides a `toString` that return
 # a string representation of the current instance.
 #
 #     class Dummy
@@ -19,11 +19,8 @@
 # Passing the class name will ensure that the initial class name
 # is always accessible through an instance.
 mixins.Formattable = (classname, properties...) ->
-  #
+  # Public:
   class ConcretFormattable
-    ##### Formattable::toString
-    #
-    # Returns the string reprensentation of this instance.
     if properties.length is 0
       ConcretFormattable::toString = ->
         "[#{ classname }]"
@@ -32,9 +29,7 @@ mixins.Formattable = (classname, properties...) ->
         formattedProperties = ("#{ p }=#{ @[ p ] }" for p in properties)
         "[#{ classname }(#{ formattedProperties.join ', ' })]"
 
-    ##### Formattable::classname
-    #
-    # Returns the class name of this instance.
+    # Public: Returns the class name {String} of this instance.
     classname: -> classname
 
 mixins.Formattable._name = 'Formattable'

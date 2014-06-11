@@ -792,19 +792,20 @@ mixins.Equatable = (properties...) ->
     equals: (o) -> o? and properties.every (p) =>
       if @[ p ].equals? then @[ p ].equals o[ p ] else o[p] is @[ p ]
 
-
 # Public: A `Formattable` object provides a `toString` that return
 # a string representation of the current instance.
 #
-#     class Dummy
-#       @include mixins.Formattable('Dummy', 'p1', 'p2')
+# ```coffeescript
+# class Dummy
+#   @include mixins.Formattable('Dummy', 'p1', 'p2')
 #
-#       constructor: (@p1, @p2) ->
-#         # ...
+#   constructor: (@p1, @p2) ->
+#     # ...
 #
-#     dummy = new Dummy(10, 'foo')
-#     dummy.toString()
-#     # [Dummy(p1=10, p2=foo)]
+# dummy = new Dummy(10, 'foo')
+# dummy.toString()
+# # [Dummy(p1=10, p2=foo)]
+# ```
 #
 # You may wonder why the class name is passed in the `Formattable`
 # call, the reason is that javascript minification can alter the
@@ -812,8 +813,15 @@ mixins.Equatable = (properties...) ->
 # name can't be relied on anymore.
 # Passing the class name will ensure that the initial class name
 # is always accessible through an instance.
+#
+# classname - The {String} name of the class for which generate a mixin.
+# properties - A list of {String} of the properties to include
+#              in the formatted output.
+#
+# Returns a {ConcretFormattable} mixin.
 mixins.Formattable = (classname, properties...) ->
-  # Public:
+  # Public: The concrete class as returned by the
+  # [Formattable](../files/mixins/formattable.coffee.html) generator.
   class ConcretFormattable
     if properties.length is 0
       ConcretFormattable::toString = ->
@@ -829,7 +837,7 @@ mixins.Formattable = (classname, properties...) ->
 mixins.Formattable._name = 'Formattable'
 
 
-# The list of properties that are unglobalizable by default.
+# Internal: The list of properties that are unglobalizable by default.
 DEFAULT_UNGLOBALIZABLE = [
   'globalizable'
   'unglobalizable'
@@ -843,9 +851,9 @@ DEFAULT_UNGLOBALIZABLE = [
   'previousDescriptors'
 ]
 
-# A `Globalizable` object can expose some methods on the specified global
-# object (`window` in a browser or `global` in nodejs when using methods
-# from the `vm` module).
+# Public: A `Globalizable` object can expose some methods on the
+# specified global object (`window` in a browser or `global` in nodejs
+# when using methods from the `vm` module).
 #
 # The *globalization* process is reversible and take care to preserve
 # the initial properties of the global that may be overriden.
@@ -853,29 +861,35 @@ DEFAULT_UNGLOBALIZABLE = [
 # The properties exposed on the global object are defined
 # in the `globalizable` property.
 #
-#     class Dummy
-#       @include mixins.Globalizable window
+# ```coffeescript
+# class Dummy
+#   @include mixins.Globalizable window
 #
-#       globalizable: ['someMethod']
+#   globalizable: ['someMethod']
 #
-#       someMethod: -> console.log 'in some method'
+#   someMethod: -> console.log 'in some method'
 #
-#     instance = new Dummy
-#     instance.globalize()
+# instance = new Dummy
+# instance.globalize()
 #
-#     someMethod()
-#     # output: 'in some method'
+# someMethod()
+# # output: 'in some method'
+# ```
 #
 # The process can be reversed with the `unglobalize` method.
 #
-#     instance.unglobalize()
+# ```coffeescript
+# instance.unglobalize()
+# ```
 #
 # The `Globalizable` function takes the target global object as the first
 # argument. The second argument define whether the functions on
 # a globalized object are bound to this object or to the global object.
 mixins.Globalizable = (global, keepContext=true) ->
-  class ConcreteGlobalizable
 
+  # Public:
+  class ConcreteGlobalizable
+    
     @unglobalizable: DEFAULT_UNGLOBALIZABLE.concat()
 
     keepContext: keepContext
@@ -989,10 +1003,6 @@ mixins.Globalizable = (global, keepContext=true) ->
         global[ key ] = undefined
 
 mixins.Globalizable._name = 'Globalizable'
-
-
-
-
 
 
 # The `HasAncestors` mixin adds several methods to instance to deal

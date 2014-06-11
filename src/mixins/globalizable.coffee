@@ -1,5 +1,5 @@
 
-# The list of properties that are unglobalizable by default.
+# Internal: The list of properties that are unglobalizable by default.
 DEFAULT_UNGLOBALIZABLE = [
   'globalizable'
   'unglobalizable'
@@ -13,9 +13,9 @@ DEFAULT_UNGLOBALIZABLE = [
   'previousDescriptors'
 ]
 
-# A `Globalizable` object can expose some methods on the specified global
-# object (`window` in a browser or `global` in nodejs when using methods
-# from the `vm` module).
+# Public: A `Globalizable` object can expose some methods on the
+# specified global object (`window` in a browser or `global` in nodejs
+# when using methods from the `vm` module).
 #
 # The *globalization* process is reversible and take care to preserve
 # the initial properties of the global that may be overriden.
@@ -23,29 +23,35 @@ DEFAULT_UNGLOBALIZABLE = [
 # The properties exposed on the global object are defined
 # in the `globalizable` property.
 #
-#     class Dummy
-#       @include mixins.Globalizable window
+# ```coffeescript
+# class Dummy
+#   @include mixins.Globalizable window
 #
-#       globalizable: ['someMethod']
+#   globalizable: ['someMethod']
 #
-#       someMethod: -> console.log 'in some method'
+#   someMethod: -> console.log 'in some method'
 #
-#     instance = new Dummy
-#     instance.globalize()
+# instance = new Dummy
+# instance.globalize()
 #
-#     someMethod()
-#     # output: 'in some method'
+# someMethod()
+# # output: 'in some method'
+# ```
 #
 # The process can be reversed with the `unglobalize` method.
 #
-#     instance.unglobalize()
+# ```coffeescript
+# instance.unglobalize()
+# ```
 #
 # The `Globalizable` function takes the target global object as the first
 # argument. The second argument define whether the functions on
 # a globalized object are bound to this object or to the global object.
 mixins.Globalizable = (global, keepContext=true) ->
-  class ConcreteGlobalizable
 
+  # Public:
+  class ConcreteGlobalizable
+    
     @unglobalizable: DEFAULT_UNGLOBALIZABLE.concat()
 
     keepContext: keepContext
@@ -159,7 +165,3 @@ mixins.Globalizable = (global, keepContext=true) ->
         global[ key ] = undefined
 
 mixins.Globalizable._name = 'Globalizable'
-
-
-
-
